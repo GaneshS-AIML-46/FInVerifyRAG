@@ -6,13 +6,13 @@ This document tracks decisions around dropping specific components, signals, or 
 
 **1. Component / Signal Removal:**
 An optional signal or component will be removed from the primary pipeline only if:
-- The upper end of its marginal-effect 95% confidence interval (via bootstrap/grouped-CV) on AUROC, AURC, and coverage-at-fixed-risk is below the removal threshold.
-- It introduces a latency or failure bottleneck without meeting the upper bound metrics.
+- The upper bound of the 95% marginal-effect interval (via bootstrap/grouped-CV) on AUROC is **< 0.01** AND on coverage-at-fixed-risk is **< 0.01**.
+- It introduces a latency or failure bottleneck (failure rate **> 5%** over at least 200 calls, or median added latency **> 2s** with no AUROC gain).
 - **Exception**: V1, V2, and Mondrian conformal risk control are core and are NOT pruned by this rule.
 
 **2. Atom Type Removal:**
 An atom type will be excluded from the main claim only if:
-- Its validation interval for AUROC and selective risk at fixed coverage (with bootstrap/grouped-CV 95% intervals) is below the acceptable threshold.
+- Its validation AUROC interval upper bound is **< 0.60**.
 - AND merging the atom type into a parent stratum (M7 fallback) fails to fix it.
 - Note: Any atom type dropped from the main claim must still be reported in an appendix.
 

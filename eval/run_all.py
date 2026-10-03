@@ -184,6 +184,32 @@ def run_all(
         paper_valid = False
 
     simulated = False
+    def _load_jsonl(path: str) -> list:
+        import json as _json
+        res = []
+        for l in open(path, encoding="utf-8"):
+            if not l.strip(): continue
+            row = _json.loads(l)
+            if strict:
+                if row.get("synthetic"):
+                    from common.errors import StrictFailure
+                    raise StrictFailure(f"Synthetic data found in {path}. Use real validation data.")
+                if "label" in row and not row.get("annotator_id"):
+                    from common.errors import StrictFailure
+                    raise StrictFailure(f"Missing annotator_id on labeled record in {path}.")
+            res.append(row)
+        if strict and res:
+            signals = ["s_ret", "s_ver", "s_nli", "s_ent", "s_div"]
+            for sig in signals:
+                vals = [r.get(sig) for r in res if r.get(sig) is not None]
+                if not vals:
+                    from common.errors import StrictFailure
+                    raise StrictFailure(f"Signal column '{sig}' is empty in {path}.")
+                if len(set(vals)) == 1:
+                    from common.errors import StrictFailure
+                    raise StrictFailure(f"Signal column '{sig}' is constant ({vals[0]}) in {path}.")
+        return res
+
     # ── Load or generate data ──────────────────────────────────────────────────
     if test_data and Path(test_data).exists():
         if "fixture" in str(test_data).lower():
@@ -192,14 +218,7 @@ def run_all(
                 raise StrictFailure(msg)
             print_not_paper_valid_banner(msg)
             paper_valid = False
-        import json as _json
-        rows = []
-        for l in open(test_data, encoding="utf-8"):
-            if not l.strip(): continue
-            row = _json.loads(l)
-            if strict and row.get("synthetic"):
-                raise StrictFailure(f"Synthetic data found in {test_data}. Use real validation data.")
-            rows.append(row)
+        rows = _load_jsonl(test_data)
         risks     = [r.get("risk", 0.0) for r in rows]
         labels    = [r.get("label", "unsupported") for r in rows]
         decisions = [r.get("decision", "SUPPORTED") for r in rows]
@@ -228,24 +247,10 @@ def run_all(
 
     cal_rows = rows
     if calib_data and Path(calib_data).exists():
-        import json as _json
-        cal_rows = []
-        for l in open(calib_data, encoding="utf-8"):
-            if not l.strip(): continue
-            row = _json.loads(l)
-            if strict and row.get("synthetic"):
-                raise StrictFailure(f"Synthetic data found in {calib_data}. Use real validation data.")
-            cal_rows.append(row)
+        cal_rows = _load_jsonl(calib_data)
     train_rows = []
     if train_data and Path(train_data).exists():
-        import json as _json
-        train_rows = []
-        for l in open(train_data, encoding="utf-8"):
-            if not l.strip(): continue
-            row = _json.loads(l)
-            if strict and row.get("synthetic"):
-                raise StrictFailure(f"Synthetic data found in {train_data}. Use real validation data.")
-            train_rows.append(row)
+        train_rows = _load_jsonl(train_data)
 
     accept_threshold = 0.35
     # ── Check Condition 3: M7 heuristic threshold fallback ────────────────────

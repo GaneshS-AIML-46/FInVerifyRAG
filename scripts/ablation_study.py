@@ -9,15 +9,27 @@ from sklearn.model_selection import GroupKFold
 from sklearn.metrics import roc_auc_score, accuracy_score
 from sklearn.impute import SimpleImputer
 
-def load_data(path):
+def load_data(path, strict=True):
     rows = []
     with open(path, "r", encoding="utf-8") as f:
         for line in f:
             if line.strip():
                 row = json.loads(line)
-                if row.get("synthetic"):
-                    raise ValueError(f"Strict Mode: Synthetic data found in {path}. Use real validation data.")
+                if strict:
+                    if row.get("synthetic"):
+                        raise ValueError(f"Strict Mode: Synthetic data found in {path}. Use real validation data.")
+                    if "label" in row and not row.get("annotator_id"):
+                        raise ValueError(f"Strict Mode: Missing annotator_id on labeled record in {path}.")
                 rows.append(row)
+    if strict and rows:
+        # Check signal columns empty or constant
+        signals = ["s_ret", "s_ver", "s_nli", "s_ent", "s_div"]
+        for sig in signals:
+            vals = [r.get(sig) for r in rows if r.get(sig) is not None]
+            if not vals:
+                raise ValueError(f"Strict Mode: Signal column '{sig}' is empty in {path}.")
+            if len(set(vals)) == 1:
+                raise ValueError(f"Strict Mode: Signal column '{sig}' is constant ({vals[0]}) in {path}.")
     return rows
 
 def evaluate_ablation():
