@@ -117,6 +117,11 @@ def _load_excluded_patterns(cfg: dict) -> list:
     return compiled
 
 
+def _load_excluded_doc_ids(cfg: dict) -> set:
+    """Return set of doc_ids explicitly excluded via inventory.excluded_doc_ids."""
+    return set(cfg.get("inventory", {}).get("excluded_doc_ids", []))
+
+
 def _is_excluded(title: str, patterns: list) -> bool:
     return any(pat.search(title) for pat in patterns)
 
@@ -315,6 +320,7 @@ def build_inventory(
     pdf_dir: Path,
     out_path: Path,
     excluded_patterns: list,
+    excluded_doc_ids: set,
     garbage_min_len: int = 8,
     garbage_max_nonascii: float = 0.30,
 ) -> list:
@@ -363,13 +369,19 @@ def build_inventory(
         # ── Title from index (fast path) ──────────────────────────────────────
         title = i_info.get("title", "").strip()
 
-        # ── Exclusion check (uses index title) ────────────────────────────────
+        # ── Exclusion check (title pattern first, then explicit doc_id list) ──
+        excl_reason = ""
         if _is_excluded(title, excluded_patterns):
+            excl_reason = "title_pattern"
+        elif doc_id in excluded_doc_ids:
+            excl_reason = "excluded_doc_id"
+        if excl_reason:
             excluded_list.append({
                 "doc_id":      doc_id,
                 "regulator":   regulator,
                 "title":       title,
                 "source_file": str(pdf_path.relative_to(ROOT)),
+                "reason":      excl_reason,
             })
             return
 
@@ -480,7 +492,7 @@ def build_inventory(
     excl_path.parent.mkdir(parents=True, exist_ok=True)
     with open(excl_path, "w", newline="", encoding="utf-8") as f:
         writer = csv.DictWriter(
-            f, fieldnames=["doc_id", "regulator", "title", "source_file"],
+            f, fieldnames=["doc_id", "regulator", "title", "reason", "source_file"],
             extrasaction="ignore")
         writer.writeheader()
         writer.writerows(excluded_list)
@@ -648,6 +660,7 @@ def main() -> None:
         sys.exit(1)
 
     excluded_patterns = _load_excluded_patterns(cfg)
+    excluded_doc_ids  = _load_excluded_doc_ids(cfg)
     garbage_min_len   = int(inv_cfg.get("garbage_title_min_len", 8))
     garbage_max_na    = float(inv_cfg.get("garbage_title_max_nonascii_ratio", 0.30))
 
@@ -655,6 +668,7 @@ def main() -> None:
         pdf_dir=pdf_dir,
         out_path=Path(args.out),
         excluded_patterns=excluded_patterns,
+        excluded_doc_ids=excluded_doc_ids,
         garbage_min_len=garbage_min_len,
         garbage_max_nonascii=garbage_max_na,
     )
