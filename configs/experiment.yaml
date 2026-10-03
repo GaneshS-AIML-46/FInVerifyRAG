@@ -123,6 +123,45 @@ inventory:
   garbage_title_min_len: 8
   garbage_title_max_nonascii_ratio: 0.30
 
+roles:
+  question_drafting:
+    provider: anthropic
+    model: claude-sonnet-5-5
+    api_key_env: ANTHROPIC_API_KEY
+    max_tokens: 1024
+    temperature: 0.3
+  judge:
+    provider: anthropic
+    model: claude-sonnet-5-5
+    api_key_env: ANTHROPIC_API_KEY
+    max_tokens: 512
+    temperature: 0.0
+  generator:
+    provider: anthropic
+    model: claude-haiku-4-5-20251001
+    api_key_env: ANTHROPIC_API_KEY
+    max_tokens: 2048
+    temperature: 0.2
+  extractor:
+    provider: anthropic
+    model: claude-haiku-4-5-20251001
+    api_key_env: ANTHROPIC_API_KEY
+    max_tokens: 1024
+    temperature: 0.0
+
+llm_prices:  # USD per million tokens; fill tomorrow after getting prices
+  claude-sonnet-5-5:
+    input: null   # PRICE MISSING - fill tomorrow
+    output: null  # PRICE MISSING - fill tomorrow
+  claude-haiku-4-5-20251001:
+    input: null   # PRICE MISSING - fill tomorrow
+    output: null  # PRICE MISSING - fill tomorrow
+
+budget_caps:  # USD hard limits
+  question_drafting: 8.0
+  pilot: 10.0
+  total: 70.0
+
 # Question family sampling weights (must sum to 1.0)
 question_families:
   RATE_THRESHOLD:       0.30

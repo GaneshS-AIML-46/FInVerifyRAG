@@ -1,0 +1,1 @@
+{"text": "{\n\"question\": \"Which specific categories of regulated entities are explicitly stated as not being required to maintain separate regulatory capital for operational risk?\",\n\"family\": \"ENTITY_APPLICABILITY\",\n\"regulator\": \"RBI\"\n}", "model": "qwen/qwen3.8-27b", "cache_hit": false}

@@ -1,0 +1,1 @@
+{"text": "{\n\"question\": \"Which specific financial institution is required to report the 'Reverse Repo' and 'Bill Rediscounted (DUPN)' line items in the Interest Sensitivity Gap analysis table?\",\n\"family\": \"ENTITY_APPLICABILITY\",\n\"regulator\": \"RBI\"\n}", "model": "qwen/qwen3.8-27b", "cache_hit": false}

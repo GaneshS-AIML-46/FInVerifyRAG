@@ -1,0 +1,1 @@
+{"text": "{\n\"question\": \"What is the specific numeric rate, threshold, limit, ratio, or percentage explicitly stated in the provided passage regarding receivables or investments?\",\n\"family\": \"RATE_THRESHOLD\",\n\"regulator\": \"SEBI\"\n}", "model": "qwen/qwen3.8-27b", "cache_hit": false}

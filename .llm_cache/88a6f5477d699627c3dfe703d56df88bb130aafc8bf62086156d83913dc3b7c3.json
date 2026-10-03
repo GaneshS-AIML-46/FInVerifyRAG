@@ -1,0 +1,1 @@
+{"text": "{\n\"question\": \"What is the minimum percentage of acquisition in a banking company that triggers the specific 'fit and proper' criteria listed under point (1) of the explanation?\",\n\"family\": \"RATE_THRESHOLD\",\n\"regulator\": \"RBI\"\n}", "model": "qwen/qwen3.8-27b", "cache_hit": false}

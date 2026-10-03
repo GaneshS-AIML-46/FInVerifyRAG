@@ -1,0 +1,1 @@
+{"text": "{\n  \"question\": \"Which specific officials within the Reserve Bank of India must be notified by issuing banks when the lock-in clause of Upper Tier II bonds is invoked?\",\n  \"family\": \"ENTITY_APPLICABILITY\",\n  \"regulator\": \"RBI\"\n}", "model": "qwen/qwen3.8-27b", "cache_hit": false}

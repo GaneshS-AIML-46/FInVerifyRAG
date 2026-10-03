@@ -1,0 +1,1 @@
+{"text": "{\n  \"question\": \"What is the minimum threshold for the collection of loss data as specified in Template OR 116?\",\n  \"family\": \"RATE_THRESHOLD\",\n  \"regulator\": \"RBI\"\n}", "model": "qwen/qwen3.8-27b", "cache_hit": false}

@@ -1,0 +1,1 @@
+{"text": "{\n  \"question\": \"Which specific paragraph governs the requirement for a Payment Bank to credit the amount involved in an unauthorised electronic transaction to the customer's account within 10 working days of notification?\",\n  \"family\": \"SECTION\",\n  \"regulator\": \"RBI\"\n}", "model": "qwen/qwen3.8-27b", "cache_hit": false}

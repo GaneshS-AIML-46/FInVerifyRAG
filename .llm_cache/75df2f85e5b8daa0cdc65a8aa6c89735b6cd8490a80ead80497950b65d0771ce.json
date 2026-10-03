@@ -1,0 +1,1 @@
+{"text": "{\n\"question\": \"What is the Annual Percentage Rate (effective annualized interest rate) specified in the passage?\",\n\"family\": \"RATE_THRESHOLD\",\n\"regulator\": \"RBI\"\n}", "model": "qwen/qwen3.8-27b", "cache_hit": false}

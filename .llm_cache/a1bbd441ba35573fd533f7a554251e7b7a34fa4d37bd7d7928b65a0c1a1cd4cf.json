@@ -1,0 +1,1 @@
+{"text": "{\n\"question\": \"According to the definition provided in the passage, what is the specific percentage threshold of a bank's total liabilities that defines a 'significant counterparty'?\",\n\"family\": \"RATE_THRESHOLD\",\n\"regulator\": \"RBI\"\n}", "model": "qwen/qwen3.8-27b", "cache_hit": false}

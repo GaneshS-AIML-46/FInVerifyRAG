@@ -1,0 +1,1 @@
+{"text": "{\n  \"question\": \"According to the passage, on which day must all transactions put through by a bank, whether repo or outright, be reflected in its investment account?\",\n  \"family\": \"RATE_THRESHOLD\",\n  \"regulator\": \"RBI\"\n}", "model": "qwen/qwen3.8-27b", "cache_hit": false}

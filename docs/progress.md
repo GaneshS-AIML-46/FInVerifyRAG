@@ -5,8 +5,8 @@
 | Phase | Status | Date | Commit | Notes |
 |-------|--------|------|--------|-------|
 | A: Verify current build | ✅ DONE | 2026-10-03 | pipeline-ready-v1 | 644/644 tests pass; check_publishable correctly FAILs; s_mech clean; strict guards work |
-| B: Document inventory and splits | ⬜ TODO | | | STOP: needs INVENTORY OK from human |
-| C: Draft questions | ⬜ TODO | | | STOP: needs QUESTIONS OK from human |
+| B: Document inventory and splits | ✅ DONE | 2026-10-03 | pipeline-ready-v1 | 2464 docs, group-aware splits, excluded_doc_ids, detect_supersession, anomaly report |
+| C: Draft questions (pre-API) | ✅ DONE | 2026-10-03 | pre-api-ready | All tooling built & tested. 684/684 tests pass. Awaiting API key + QUESTIONS OK from human. |
 | D: Pilot run (50 questions) | ⬜ TODO | | | STOP: needs PILOT OK from human |
 | E: Labeling support | ⬜ TODO | | | STOP: needs PILOT LABELS DONE from human |
 | F: Full run | ⬜ TODO | | | STOP: needs LABELS DONE from human |
@@ -75,7 +75,36 @@ NOT PUBLISHABLE
 
 ---
 
-## Next Step: Phase B
+## Phase C — Detail
 
-Build `scripts/make_doc_inventory.py` and `scripts/assign_doc_splits.py`.
-No human action needed before Phase B.
+**Status**: DONE (tooling), awaiting API key  
+**Tag**: pre-api-ready  
+**Tests**: 684/684 pass (40 new tests added for T0–T6 tooling)
+
+### Scripts built
+| Script | Purpose |
+|--------|---------|
+| `scripts/select_seed_chunks.py` | Filters corpus to ~1 200 seed chunks (9 skip reasons, ≤2/doc, newest version, family_hint) |
+| `scripts/draft_questions.py` | Reads seed_chunks.csv, calls LLM, validates evidence_quote, dedupes, no-fallback |
+| `scripts/finalize_questions.py` | Hard rejects template questions; writes questions.jsonl + gold_chunks.jsonl |
+| `scripts/export_labeling_sheet.py` | Blind sheet (no decision/risk/signals); highlights numbers/dates |
+| `scripts/import_labels.py` | Validates annotator_id, normalises labels, rejects empty |
+| `scripts/kappa.py` | Cohen's κ (3-category), confusion matrix, disagreements CSV |
+| `scripts/estimate_cost.py` | Prints PRICE MISSING for null prices; never raises |
+| `eval/retrieval_metrics.py` | Recall@6/10, MRR, nDCG@10; not_available if files missing |
+| `eval/latency_logger.py` | p50/p95 per stage |
+
+### LLM infrastructure
+- Multi-provider `common/llm_client.py` (anthropic SDK, openai-compatible for groq/ollama)
+- Role-based config (question_drafting/judge → claude-sonnet-5-5; generator/extractor → claude-haiku-4-5-20251001)
+- Budget caps, BudgetExceededError, cost tracking to results/cost.jsonl
+- Disk cache (.llm_cache/); sha256 keyed; hits cost $0
+- No template fallbacks; LLMError raised on any failure
+
+### Next Step: Phase C (continued — real API calls)
+
+Human action required:
+1. Obtain Anthropic API key
+2. Fill `llm_prices` in `configs/experiment.yaml`
+3. Run pilot draft (see `docs/tomorrow.md`)
+4. Say **QUESTIONS OK** when satisfied

@@ -1,0 +1,1 @@
+{"text": "{\n  \"question\": \"Under which category on the SEBI website is this circular available?\",\n  \"family\": \"DATE_TIMELINE\",\n  \"regulator\": \"SEBI\"\n}", "model": "qwen/qwen3.8-27b", "cache_hit": false}

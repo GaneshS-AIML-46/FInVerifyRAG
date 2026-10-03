@@ -1,0 +1,1 @@
+{"text": "{\n  \"question\": \"According to the passage, within what period from the date of first sanction must a facility become non-performing to be classified as a case of quick mortality in accounts?\",\n  \"family\": \"DATE_TIMELINE\",\n  \"regulator\": \"RBI\"\n}", "model": "qwen/qwen3.8-27b", "cache_hit": false}

@@ -1,0 +1,1 @@
+{"text": "{\n  \"question\": \"Which specific categories of investors are prohibited from bidding through the ASBA process?\",\n  \"family\": \"ENTITY_APPLICABILITY\",\n  \"regulator\": \"SEBI\"\n}", "model": "qwen/qwen3.8-27b", "cache_hit": false}

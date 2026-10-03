@@ -1,0 +1,1 @@
+{"text": "{\n\"question\": \"According to the illustrative example in the passage, what percentage of the value of security held is required to be provided for the secured portion?\",\n\"family\": \"RATE_THRESHOLD\",\n\"regulator\": \"RBI\"\n}", "model": "qwen/qwen3.8-27b", "cache_hit": false}

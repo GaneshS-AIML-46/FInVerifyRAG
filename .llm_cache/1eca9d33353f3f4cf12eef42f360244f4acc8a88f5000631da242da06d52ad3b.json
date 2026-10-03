@@ -1,0 +1,1 @@
+{"text": "{\n  \"question\": \"Which entities are prohibited from displaying third-party products and services on their digital banking channels after customer login, unless specifically permitted by the Reserve Bank?\",\n  \"family\": \"ENTITY_APPLICABILITY\",\n  \"regulator\": \"RBI\"\n}", "model": "qwen/qwen3.8-27b", "cache_hit": false}

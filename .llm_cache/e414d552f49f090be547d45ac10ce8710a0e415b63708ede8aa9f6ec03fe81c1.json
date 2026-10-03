@@ -1,0 +1,1 @@
+{"text": "{\n  \"question\": \"How many days' notice must a card-issuer provide to the cardholder before altering the terms of the card?\",\n  \"family\": \"RATE_THRESHOLD\",\n  \"regulator\": \"RBI\"\n}", "model": "qwen/qwen3.8-27b", "cache_hit": false}

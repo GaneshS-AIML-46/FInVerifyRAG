@@ -1,0 +1,1 @@
+{"text": "{\n\"question\": \"According to the guidelines, what is the maximum number of investors (excluding institutional investors) to whom an offer or allotment through private placement can be made in a financial year?\",\n\"family\": \"RATE_THRESHOLD\",\n\"regulator\": \"SEBI\"\n}", "model": "qwen/qwen3.8-27b", "cache_hit": false}

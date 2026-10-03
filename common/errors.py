@@ -19,3 +19,15 @@ def print_not_paper_valid_banner(reason: str = "") -> None:
     lines.append(sep)
     lines.append("")
     print("\n".join(lines), flush=True)
+
+
+class BudgetExceededError(Exception):
+    """Raised when a role's cost budget cap is exceeded."""
+
+
+class LLMError(Exception):
+    """Raised on unrecoverable LLM errors (no fallback)."""
+
+
+class PriceMissingError(Exception):
+    """Raised when a model's price is null in experiment.yaml config."""
