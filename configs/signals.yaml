@@ -4,26 +4,32 @@
 
 # ── Signal: s_div (Context Divergence) ──────────────────────────────────────
 s_div:
+  type: continuous
   # Embedding model for Strategy A (cosine divergence)
   embed_model: "BAAI/bge-small-en-v1.5"
   # KL normalization cap (for Strategy B when logprobs available)
   kl_max_clip: 5.0
 
 # ── Signal: s_ret (Retrieval Strength) ──────────────────────────────────────
+s_ret:
+  type: continuous
 # No extra config needed — uses rr.metadata["rerank_scores"] or rank position.
 
 # ── Signal: s_ver (V1 Verification Encoding) ────────────────────────────────
 s_ver:
+  type: categorical
   # Encoding: MATCH→0.0, NOT_FOUND/NA→0.5, MISMATCH→1.0
   # (Matches v1_deterministic.py status strings — do not change)
 
 # ── Signal: s_nli (NLI Entailment) ─────────────────────────────────────────
 s_nli:
+  type: continuous
   # Default value when V2 was skipped (NLI not run)
   default_skipped: 0.5
 
 # ── Signal: s_ent (Token Entropy) ───────────────────────────────────────────
 s_ent:
+  type: continuous
   # Maximum -log(p) we normalize against (~0.67% probability)
   max_entropy_clip: 5.0
   # Heuristic: characters per token for span approximation

@@ -4,30 +4,39 @@ import numpy as np
 from pathlib import Path
 from common.errors import StrictFailure
 
-def get_allowed_annotators():
+def get_allowed_annotators(strict=True):
     try:
         with open("configs/experiment.yaml", "r") as f:
             config = yaml.safe_load(f)
             return config.get("allowed_annotators", [])
-    except Exception:
+    except Exception as e:
+        if strict:
+            raise StrictFailure(f"Failed to read configs/experiment.yaml: {e}")
         return []
 
-def get_signal_keys():
+def get_signal_config(strict=True):
     try:
         with open("configs/signals.yaml", "r") as f:
-            config = yaml.safe_load(f)
-            return [k for k in config.keys() if k.startswith("s_")]
-    except Exception:
-        return ["s_ret", "s_ver", "s_nli", "s_ent", "s_div"]
+            return yaml.safe_load(f)
+    except Exception as e:
+        if strict:
+            raise StrictFailure(f"Failed to read configs/signals.yaml: {e}")
+        return {}
 
 def load_and_validate_data(path: str, strict: bool = True) -> list:
     res = []
-    allowed_annotators = get_allowed_annotators()
+    allowed_annotators = get_allowed_annotators(strict)
+    if strict and not allowed_annotators:
+        raise StrictFailure("allowed_annotators list is empty or missing in configs/experiment.yaml")
+
     forbidden_annotators = {"judge", "pipeline", "mock"}
     
     for l in open(path, encoding="utf-8"):
         if not l.strip(): continue
         row = json.loads(l)
+        if "s_mech" in row:
+            raise StrictFailure(f"Row contains forbidden key 's_mech' in {path}")
+            
         if strict:
             if row.get("synthetic"):
                 raise StrictFailure(f"Synthetic data found in {path}. Use real validation data.")
@@ -42,31 +51,49 @@ def load_and_validate_data(path: str, strict: bool = True) -> list:
         res.append(row)
         
     if strict and res:
-        signals = get_signal_keys()
+        sig_config = get_signal_config(strict)
+        signals = {k: v for k, v in sig_config.items() if k.startswith("s_")}
         if "s_mech" in signals:
             raise StrictFailure(f"s_mech must not appear in signals config. (Found in {path})")
             
         try:
             from aggregate.dataset import FEATURE_COLS
-        except ImportError:
-            FEATURE_COLS = []
+        except ImportError as e:
+            raise StrictFailure(f"Failed to import FEATURE_COLS: {e}")
             
-        for sig in signals:
-            vals = [float(r.get(sig)) for r in res if r.get(sig) is not None]
+        for sig, cfg in signals.items():
+            sig_type = cfg.get("type", "continuous")
+            raw_vals = [r.get(sig) for r in res if r.get(sig) is not None]
             n_total = len(res)
-            n_missing = n_total - len(vals)
+            n_missing = n_total - len(raw_vals)
             
             missing_indicator = f"{sig}_skipped"
             has_indicator = missing_indicator in FEATURE_COLS
             
             if n_missing / n_total > 0.20 and not has_indicator:
                 raise StrictFailure(f"Signal column '{sig}' is missing > 20% of values in {path} and has no explicit missing-indicator feature.")
-                
-            if len(vals) > 1:
-                std = np.std(vals)
-                unique_frac = len(set(vals)) / len(vals)
-                if std < 1e-3:
-                    raise StrictFailure(f"Signal column '{sig}' is practically constant (std < 1e-3) in {path}.")
-                if unique_frac < 0.05:
-                    raise StrictFailure(f"Signal column '{sig}' has < 5% unique values in {path}.")
+            
+            if len(raw_vals) > 1:
+                if sig_type == "categorical":
+                    # For categorical signals: require >= 2 distinct values and rarest value >= 2% of rows
+                    # do not call float()
+                    unique_counts = {}
+                    for v in raw_vals:
+                        unique_counts[v] = unique_counts.get(v, 0) + 1
+                    
+                    if len(unique_counts) < 2:
+                        raise StrictFailure(f"Categorical signal '{sig}' has < 2 distinct values in {path}.")
+                    
+                    rarest_count = min(unique_counts.values())
+                    if rarest_count / len(raw_vals) < 0.02:
+                        raise StrictFailure(f"Categorical signal '{sig}' rarest value appears in < 2% of present rows in {path}.")
+                else:
+                    # Continuous
+                    vals = [float(v) for v in raw_vals]
+                    std = np.std(vals)
+                    unique_frac = len(set(vals)) / len(vals)
+                    if std < 1e-3:
+                        raise StrictFailure(f"Signal column '{sig}' is practically constant (std < 1e-3) in {path}.")
+                    if unique_frac < 0.05:
+                        raise StrictFailure(f"Signal column '{sig}' has < 5% unique values in {path}.")
     return res

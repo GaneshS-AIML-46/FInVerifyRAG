@@ -2,7 +2,7 @@ import json
 from common.validation import load_and_validate_data
 from common.errors import StrictFailure
 
-def create_and_test(filename, rows, description):
+def create_and_test(filename, rows, description, expect_fail=True):
     import os
     os.makedirs(os.path.dirname(filename), exist_ok=True)
     with open(filename, "w", encoding="utf-8") as f:
@@ -10,11 +10,71 @@ def create_and_test(filename, rows, description):
             f.write(json.dumps(r) + "\n")
     try:
         load_and_validate_data(filename, strict=True)
-        print(f"FAIL: {description} did NOT raise an exception.")
+        if expect_fail:
+            print(f"FAIL: {description} did NOT raise an exception.")
+        else:
+            print(f"PASS: {description} completed without exception.")
     except StrictFailure as e:
-        print(f"PASS: {description} raised -> {e}")
+        if expect_fail:
+            print(f"PASS: {description} raised -> {e}")
+        else:
+            print(f"FAIL: {description} raised unexpectedly -> {e}")
 
 if __name__ == "__main__":
+    import random
+    
+    # Base valid row for clean test
+    # Categorical s_ver must have >= 2 distinct values and rarest >= 2%
+    # We will generate 50 rows.
+    # To be clean: s_ver = "MATCH" (25), "MISMATCH" (25).
+    # s_ret, s_nli, s_ent, s_div = continuous random
+    clean_rows = []
+    for i in range(50):
+        clean_rows.append({
+            "label": "unsupported",
+            "annotator_id": "human_1",
+            "s_ver": "MATCH" if i < 25 else "MISMATCH",
+            "s_ret": random.random(),
+            "s_nli": random.random(),
+            "s_ent": random.random(),
+            "s_div": random.random()
+        })
+        
+    create_and_test(
+        "results_mock/test_clean.jsonl",
+        clean_rows,
+        "Clean file (categorical s_ver + continuous)",
+        expect_fail=False
+    )
+    
+    # Test categorical s_ver with only one value
+    bad_categorical_rows = []
+    for i in range(50):
+        bad_categorical_rows.append({
+            "label": "unsupported",
+            "annotator_id": "human_1",
+            "s_ver": "MATCH", # Only one value
+            "s_ret": random.random(),
+            "s_nli": random.random(),
+            "s_ent": random.random(),
+            "s_div": random.random()
+        })
+    create_and_test(
+        "results_mock/bad_categorical.jsonl",
+        bad_categorical_rows,
+        "Categorical signal < 2 distinct values check"
+    )
+
+    # Test s_mech in row
+    bad_mech_rows = clean_rows[:1]
+    bad_mech_rows[0]["s_mech"] = 0.5
+    create_and_test(
+        "results_mock/bad_mech.jsonl",
+        bad_mech_rows,
+        "Row contains s_mech check"
+    )
+    
+    # Original tests
     # Test 1: Synthetic
     create_and_test(
         "results_mock/bad_synthetic.jsonl",
@@ -30,14 +90,12 @@ if __name__ == "__main__":
     )
 
     # Test 3: Missing signal > 20% (s_ver) without indicator
-    # Make other signals not constant
-    valid_row = {"label": "unsupported", "annotator_id": "human_1", "s_ret": 0.5, "s_ver": 0.1, "s_nli": 0.2, "s_ent": 0.3, "s_div": 0.4}
-    valid_row2 = {"label": "unsupported", "annotator_id": "human_1", "s_ret": 0.8, "s_ver": 0.9, "s_nli": 0.8, "s_ent": 0.7, "s_div": 0.6}
+    valid_row = {"label": "unsupported", "annotator_id": "human_1", "s_ret": 0.5, "s_ver": "MATCH", "s_nli": 0.2, "s_ent": 0.3, "s_div": 0.4}
+    valid_row2 = {"label": "unsupported", "annotator_id": "human_1", "s_ret": 0.8, "s_ver": "MISMATCH", "s_nli": 0.8, "s_ent": 0.7, "s_div": 0.6}
     
     missing_ver_row = {"label": "unsupported", "annotator_id": "human_1", "s_ret": 0.1, "s_nli": 0.2, "s_ent": 0.3, "s_div": 0.4}
     missing_ver_row2 = {"label": "unsupported", "annotator_id": "human_1", "s_ret": 0.9, "s_nli": 0.8, "s_ent": 0.7, "s_div": 0.6}
     
-    # 6 rows total. 2 have s_ver missing. 2/6 = 33% > 20%
     create_and_test(
         "results_mock/bad_missing.jsonl",
         [valid_row, valid_row2, valid_row, valid_row2, missing_ver_row, missing_ver_row2],
@@ -45,30 +103,35 @@ if __name__ == "__main__":
     )
 
     # Test 4: Constant signal (std < 1e-3)
+    # Using s_div as constant
+    bad_constant_rows = []
+    for i in range(50):
+        bad_constant_rows.append({
+            "label": "unsupported",
+            "annotator_id": "human_1",
+            "s_ver": "MATCH" if i < 25 else "MISMATCH",
+            "s_ret": random.random(),
+            "s_nli": random.random(),
+            "s_ent": random.random(),
+            "s_div": 0.5
+        })
     create_and_test(
         "results_mock/bad_constant.jsonl",
-        [valid_row, valid_row, valid_row, valid_row, valid_row, valid_row],
+        bad_constant_rows,
         "Constant signal (std < 1e-3) check"
     )
     
     # Test 5: Unique fraction < 5%
-    # We need <5% unique. 50 items. 49 are identical, 1 is different.
-    # But wait, if they are identical, std might be small? 
-    # If 1 is different, std > 0. Let's make sure std > 1e-3.
-    # 49 items are 0.5, 1 item is 1.0. std is approx sqrt( (0.5^2)/50 ) ~ 0.07 > 1e-3.
-    # But other signals must be valid (not constant, unique > 5%).
-    # So let's make all other signals completely random/unique for each row.
-    import random
     rows_unique = []
     for i in range(49):
         rows_unique.append({
             "label": "unsupported", "annotator_id": "human_1",
-            "s_ret": random.random(), "s_ver": random.random(), 
+            "s_ret": random.random(), "s_ver": "MATCH" if i < 25 else "MISMATCH", 
             "s_nli": random.random(), "s_ent": 0.5, "s_div": random.random()
         })
     rows_unique.append({
         "label": "unsupported", "annotator_id": "human_1",
-        "s_ret": random.random(), "s_ver": random.random(), 
+        "s_ret": random.random(), "s_ver": "MATCH", 
         "s_nli": random.random(), "s_ent": 1.0, "s_div": random.random()
     })
     
