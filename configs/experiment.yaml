@@ -57,5 +57,14 @@ paths:
   gold_atoms: data/gold/atoms.jsonl
   aggregator: models/aggregator/aggregator_v1.pkl
   results: results
+  pdf_dir: "Dataset/data/full_dataset"
+  doc_inventory: "data/doc_inventory.csv"
+  doc_splits: "data/splits/doc_assignment.csv"
+
+splits:
+  train: 0.40
+  calib: 0.35
+  test:  0.25
+  seed:  42
 
 allowed_annotators: ["human_1", "human_2", "reviewer"]
