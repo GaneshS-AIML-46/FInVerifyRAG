@@ -4,7 +4,7 @@ bench/temporal_tags.py
 M10 Benchmark: Mark questions whose answer changed after an amendment.
 
 These temporal-tagged questions form the drift test set used in the
-drift experiment (eval/drift_exp.py).
+drift experiment (experiments/drift/drift_exp.py).
 
 A question is temporal if:
   1. It has ``temporal_tag=True`` (set by generate_temporal_questions), OR

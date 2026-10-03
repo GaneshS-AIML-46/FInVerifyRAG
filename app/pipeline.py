@@ -410,19 +410,22 @@ def run_pipeline(
         # ── M5: Verify (cascade V1 + V2) ──────────────────────────────────────
         t = time.perf_counter()
         cascade = _load_cascade()
-        verified_atoms = cascade(atoms, rr)
+        verified_atoms = cascade(atoms, rr, strict=strict)
         latency["verify"] = round(time.perf_counter() - t, 3)
         logger.info("M5 done: %d verified  (%.3fs)", len(verified_atoms), latency["verify"])
 
         # ── M6: Score (aggregator) ─────────────────────────────────────────────
         t = time.perf_counter()
         aggregator = _load_aggregator()
-        scored_atoms: List[ScoredAtom] = aggregator(verified_atoms, answer, rr)
+        scored_atoms: List[ScoredAtom] = aggregator(verified_atoms, answer, rr, strict=strict)
         latency["score"] = round(time.perf_counter() - t, 3)
         logger.info("M6 done: %d scored  (%.3fs)", len(scored_atoms), latency["score"])
 
         # ── M7: Load thresholds ────────────────────────────────────────────────
         thresholds = _load_thresholds()
+        if strict and not thresholds:
+            from common.errors import StrictFailure
+            raise StrictFailure("No certified thresholds at models/guarantee/thresholds.json. Refusing heuristic thresholds.")
 
         # ── M8: Decide (router + judge + combine) ──────────────────────────────
         t = time.perf_counter()

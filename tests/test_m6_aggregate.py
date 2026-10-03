@@ -267,7 +267,6 @@ class TestFallbackRisk:
             "s_ver": 0.0, "s_nli": 0.0, "s_ent": 0.0,
             "s_ret": 1.0,  # inverted: high s_ret → low risk
             "s_div": 1.0,  # inverted: high s_div → low risk
-            "s_mech": 0.0,
         }
         risk = _fallback_risk(feats)
         assert risk < 0.2
@@ -277,7 +276,6 @@ class TestFallbackRisk:
             "s_ver": 1.0, "s_nli": 1.0, "s_ent": 1.0,
             "s_ret": 0.0,   # inverted: low s_ret → high risk
             "s_div": 0.0,   # inverted: low s_div → high risk
-            "s_mech": 1.0,
         }
         risk = _fallback_risk(feats)
         assert risk > 0.8
@@ -285,7 +283,7 @@ class TestFallbackRisk:
     def test_mid_signals_mid_risk(self):
         feats = {
             "s_ver": 0.5, "s_nli": 0.5, "s_ent": 0.5,
-            "s_ret": 0.5, "s_div": 0.5, "s_mech": 0.5,
+            "s_ret": 0.5, "s_div": 0.5,
         }
         risk = _fallback_risk(feats)
         assert abs(risk - 0.5) < 0.1
@@ -294,9 +292,6 @@ class TestFallbackRisk:
         feats = {"s_ver": 0.3, "s_nli": 0.4, "s_ent": 0.2, "s_ret": 0.7}
         risk = _fallback_risk(feats)
         assert 0.0 <= risk <= 1.0
-
-
-_MECH_PATCH = "signals.s_mech._compute_lookback_from_model"
 
 
 class TestScoreFunction:
@@ -309,24 +304,21 @@ class TestScoreFunction:
         ans = _make_answer(logprobs=[math.log(0.8)] * 20)
         rr = _make_rr(rerank_scores={"chunk-001": 0.85})
 
-        with patch(_MECH_PATCH, return_value=None):
-            result = score(vas, ans, rr, use_mech_cache=False)
+        result = score(vas, ans, rr)
         assert len(result) == len(vas)
 
     def test_returns_scored_atom_type(self):
         va = [_make_verified()]
         ans = _make_answer()
         rr = _make_rr()
-        with patch(_MECH_PATCH, return_value=None):
-            result = score(va, ans, rr, use_mech_cache=False)
+        result = score(va, ans, rr)
         assert all(isinstance(s, ScoredAtom) for s in result)
 
     def test_risk_in_range(self):
         vas = [_make_verified(v1_status=s) for s in ["MATCH", "MISMATCH", "NOT_FOUND", "NA"]]
         ans = _make_answer()
         rr = _make_rr()
-        with patch(_MECH_PATCH, return_value=None):
-            result = score(vas, ans, rr, use_mech_cache=False)
+        result = score(vas, ans, rr)
         for s in result:
             assert 0.0 <= s.risk <= 1.0
 
@@ -336,8 +328,7 @@ class TestScoreFunction:
         ans = _make_answer(logprobs=[math.log(0.8)] * 20)
         rr = _make_rr(rerank_scores={"chunk-001": 0.9})
 
-        with patch(_MECH_PATCH, return_value=None):
-            result = score([va_match, va_mismatch], ans, rr, use_mech_cache=False)
+        result = score([va_match, va_mismatch], ans, rr)
         risk_match    = result[0].risk
         risk_mismatch = result[1].risk
         assert risk_mismatch > risk_match, (
@@ -348,8 +339,7 @@ class TestScoreFunction:
         va = [_make_verified()]
         ans = _make_answer()
         rr = _make_rr()
-        with patch(_MECH_PATCH, return_value=None):
-            result = score(va, ans, rr, use_mech_cache=False)
+        result = score(va, ans, rr)
         assert "signals" in result[0].metadata
         signals = result[0].metadata["signals"]
         assert "s_ver" in signals
@@ -360,12 +350,10 @@ class TestScoreFunction:
         va = [_make_verified()]
         ans = _make_answer()
         rr = _make_rr()
-        with patch(_MECH_PATCH, return_value=None):
-            result = score(
-                va, ans, rr,
-                model_path=str(tmp_path / "nonexistent_model.pkl"),
-                use_mech_cache=False,
-            )
+        result = score(
+            va, ans, rr,
+            model_path=str(tmp_path / "nonexistent_model.pkl"),
+        )
         assert len(result) == 1
         assert result[0].metadata["model_mode"] == "fallback_weighted_average"
 
@@ -388,12 +376,10 @@ class TestScoreFunction:
         ans = _make_answer(logprobs=[math.log(0.7)] * 20)
         rr = _make_rr(rerank_scores={"chunk-001": 0.8})
 
-        with patch(_MECH_PATCH, return_value=None):
-            result = score(
-                va, ans, rr,
-                model_path=str(model_path),
-                use_mech_cache=False,
-            )
+        result = score(
+            va, ans, rr,
+            model_path=str(model_path),
+        )
         assert len(result) == 1
         assert 0.0 <= result[0].risk <= 1.0
         assert result[0].metadata["model_mode"] in {"lightgbm", "logreg"}

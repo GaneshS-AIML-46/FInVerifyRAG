@@ -86,7 +86,7 @@ eval/baselines.py (10 tests)
   - run_baseline: unknown name raises ValueError
   - run_baseline: all names in BASELINE_REGISTRY work
 
-eval/drift_exp.py (8 tests)
+experiments/drift/drift_exp.py (8 tests) [standalone — not part of main pipeline]
   - run_drift_experiment: returns DriftExperimentResult
   - run_drift_experiment: 4 strategies always present
   - run_drift_experiment: violation_rate in [0, 1]
@@ -791,10 +791,10 @@ class TestBaselines:
 
 
 # ══════════════════════════════════════════════════════════════════════════════
-# Group 7: eval/drift_exp.py
+# Group 7: experiments/drift/drift_exp.py  (standalone — NOT part of main pipeline)
 # ══════════════════════════════════════════════════════════════════════════════
 
-from eval.drift_exp import run_drift_experiment, DriftExperimentResult
+from experiments.drift.drift_exp import run_drift_experiment, DriftExperimentResult
 
 
 class TestDriftExperiment:
@@ -882,20 +882,19 @@ class TestRunAll:
             seed=42,
             n_splits=50,
             skip_baselines=True,
-            skip_drift=True,
         )
         assert isinstance(results, dict)
 
     def test_creates_output_files(self, tmp_path):
         run_all(results_dir=str(tmp_path), seed=42, n_splits=50,
-                skip_baselines=True, skip_drift=True)
+                skip_baselines=True)
         assert (tmp_path / "summary.json").exists()
         assert (tmp_path / "violation_rate.json").exists()
         assert (tmp_path / "rc_curve.json").exists()
 
     def test_summary_keys(self, tmp_path):
         run_all(results_dir=str(tmp_path), seed=42, n_splits=50,
-                skip_baselines=True, skip_drift=True)
+                skip_baselines=True)
         summary = json.loads((tmp_path / "summary.json").read_text())
         for key in ("hallucination_rate", "coverage", "aurc",
                     "violation_rate", "violation_rate_ok"):
@@ -903,36 +902,39 @@ class TestRunAll:
 
     def test_violation_rate_ok_present(self, tmp_path):
         run_all(results_dir=str(tmp_path), seed=42, n_splits=50,
-                skip_baselines=True, skip_drift=True)
+                skip_baselines=True)
         summary = json.loads((tmp_path / "summary.json").read_text())
         assert "violation_rate_ok" in summary
         assert isinstance(summary["violation_rate_ok"], bool)
 
     def test_skip_baselines(self, tmp_path):
         run_all(results_dir=str(tmp_path), seed=42, n_splits=20,
-                skip_baselines=True, skip_drift=True)
+                skip_baselines=True)
         # main_table.json should NOT exist when skip_baselines=True
         assert not (tmp_path / "main_table.json").exists()
 
-    def test_skip_drift(self, tmp_path):
+    def test_drift_table_never_created(self, tmp_path):
+        """drift_table.json is no longer written by run_all (moved to experiments/drift/)."""
         run_all(results_dir=str(tmp_path), seed=42, n_splits=20,
-                skip_baselines=True, skip_drift=True)
+                skip_baselines=True)
         assert not (tmp_path / "drift_table.json").exists()
 
-    def test_drift_table_created(self, tmp_path):
+
+    def test_drift_table_still_absent_explicit(self, tmp_path):
+        """Even if caller somehow expects skip_drift=False the file must not appear."""
         run_all(results_dir=str(tmp_path), seed=42, n_splits=20,
-                skip_baselines=True, skip_drift=False)
-        assert (tmp_path / "drift_table.json").exists()
+                skip_baselines=True)
+        assert not (tmp_path / "drift_table.json").exists()
 
     def test_deterministic_with_seed(self, tmp_path):
         r1 = run_all(results_dir=str(tmp_path / "r1"), seed=99, n_splits=30,
-                     skip_baselines=True, skip_drift=True)
+                     skip_baselines=True)
         r2 = run_all(results_dir=str(tmp_path / "r2"), seed=99, n_splits=30,
-                     skip_baselines=True, skip_drift=True)
+                     skip_baselines=True)
         assert r1["summary"]["hallucination_rate"] == r2["summary"]["hallucination_rate"]
 
     def test_hallucination_rate_in_range(self, tmp_path):
         results = run_all(results_dir=str(tmp_path), seed=42, n_splits=50,
-                          skip_baselines=True, skip_drift=True)
+                          skip_baselines=True)
         hr = results["summary"]["hallucination_rate"]
         assert 0.0 <= hr <= 1.0 or math.isnan(hr)

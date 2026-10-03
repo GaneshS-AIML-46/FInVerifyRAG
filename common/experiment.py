@@ -57,8 +57,18 @@ def provenance(path: Optional[str] = None) -> Dict[str, str]:
     }
 
 
-def strict_default() -> bool:
+def is_paper_mode(path: Optional[str] = None) -> bool:
     try:
-        return bool(load_experiment().get("strict", True))
+        return load_experiment(path).get("mode") == "paper"
+    except Exception:
+        return False
+
+
+def strict_default(path: Optional[str] = None) -> bool:
+    try:
+        exp = load_experiment(path)
+        if exp.get("mode") == "paper":
+            return True
+        return bool(exp.get("strict", False))
     except FileNotFoundError:
         return True

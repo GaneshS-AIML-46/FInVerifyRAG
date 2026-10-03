@@ -94,6 +94,7 @@ class AnswerDecision:
     n_abstained:     int = 0
     n_not_verified:  int = 0
     judge_calls:     int = 0
+    parse_errors:    int = 0
     coverage:        float = 0.0            # fraction of atoms that are SUPPORTED or VERIFIED
     answer_text:     str = ""
     query:           str = ""
@@ -143,6 +144,7 @@ def combine(
     n_uncertain    = 0
     n_abstained    = 0
     n_not_verified = 0
+    parse_errors   = 0
     judge_calls    = len(judge_results)
 
     for scored, route in zip(scored_atoms, route_results):
@@ -181,6 +183,8 @@ def combine(
                 rationale    = jr.rationale
                 ev_quote     = jr.evidence_quote
                 n_not_verified += 1
+                if getattr(jr, 'parse_error', False):
+                    parse_errors += 1
         else:
             # Fallback: treat unknown status as ABSTAINED
             final_status = ABSTAINED
@@ -225,6 +229,7 @@ def combine(
         n_abstained=n_abstained,
         n_not_verified=n_not_verified,
         judge_calls=judge_calls,
+        parse_errors=parse_errors,
         coverage=round(coverage, 4),
         answer_text=answer.answer_text,
         query=answer.query,
@@ -245,6 +250,7 @@ def decide(
     rr,                             # RetrievalResult
     answer:         GeneratedAnswer,
     skip_judge:     bool = False,
+    mode:           str = 'selective',
 ) -> AnswerDecision:
     """
     Full M8 pipeline in one call:
@@ -268,6 +274,10 @@ def decide(
     from decision.router import route as _route
 
     route_results = _route(scored_atoms, thresholds)
+
+    if mode == 'llm_judge_all':
+        for r in route_results:
+            r.status = UNCERTAIN
 
     judge_results: Dict[str, JudgeResult] = {}
     if not skip_judge:

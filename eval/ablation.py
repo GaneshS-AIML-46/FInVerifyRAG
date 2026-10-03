@@ -17,10 +17,9 @@ SIGNAL_DROPS = [
     ("No s_ret signal", ["s_ret"]),
     ("No s_nli signal", ["s_nli"]),
     ("No s_ent signal", ["s_ent"]),
-    ("No s_mech signal", ["s_mech"]),
 ]
 
-FEATURES = ["s_ver", "s_nli", "s_ent", "s_ret", "s_div", "s_mech"]
+FEATURES = ["s_ver", "s_nli", "s_ent", "s_ret", "s_div"]
 
 
 def _matrix(rows: Sequence[dict], drop: Sequence[str]) -> np.ndarray:

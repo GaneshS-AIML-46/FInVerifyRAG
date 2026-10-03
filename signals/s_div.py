@@ -105,6 +105,7 @@ def compute_s_div(
     verified_atom: VerifiedAtom,
     answer: GeneratedAnswer,
     no_context_logprobs: Optional[List[float]] = None,
+    strict: bool = False,
 ) -> float:
     """
     Compute the context-divergence signal for one atom.
@@ -115,6 +116,7 @@ def compute_s_div(
     answer           : GeneratedAnswer with answer_text, token_logprobs,
                        and optionally metadata["no_context_answer"].
     no_context_logprobs : Optional per-token logprobs of the no-context answer.
+    strict           : If True, raise StrictFailure if signal fails to load.
 
     Returns
     -------
@@ -149,6 +151,9 @@ def compute_s_div(
 
     embedder = _get_embedder()
     if embedder is None:
+        if strict:
+            from common.errors import StrictFailure
+            raise StrictFailure("Signal 's_div' failed to load embedder.")
         logger.error("s_div: embedder unavailable; marking missing.")
         return float("nan")
 
@@ -157,5 +162,8 @@ def compute_s_div(
         sim = float(_cosine(vecs[0].tolist(), vecs[1].tolist()))
         return round(1.0 - sim, 4)   # divergence = 1 - similarity
     except Exception as exc:
+        if strict:
+            from common.errors import StrictFailure
+            raise StrictFailure(f"Signal 's_div' embedding failed: {exc}") from exc
         logger.warning("s_div embedding failed: %s", exc)
         return float("nan")

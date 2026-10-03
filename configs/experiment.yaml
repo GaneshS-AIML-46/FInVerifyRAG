@@ -1,14 +1,25 @@
 # Single driver for paper runs. Stage YAMLs stay the source for model
 # hyperparameters; this file selects provider, seeds, and strictness.
+mode: paper
 strict: true
 seed: 42
 seeds: [42, 43, 44, 45, 46]
 
-provider:
+generator_provider:
   # Env vars override these defaults. Do not hardcode an API model id here.
   base_url: "http://localhost:11434/v1"
   model: "qwen2.5:7b-instruct-q4_K_M"
   api_key_env: "LLM_API_KEY"
+
+extractor_provider:
+  base_url: "http://localhost:11434/v1"
+  model: "qwen2.5:7b-instruct-q4_K_M"
+  api_key_env: "LLM_API_KEY"
+
+judge_provider:
+  base_url: "http://localhost:11434/v1"
+  model: "qwen2.5:7b-instruct-q4_K_M"
+  api_key_env: "JUDGE_API_KEY"
 
 rate_limit:
   # Token bucket: requests_per_second <= 0 disables waiting (unit tests).
@@ -17,18 +28,6 @@ rate_limit:
   max_retries: 6
   backoff_min_seconds: 1.0
   backoff_max_seconds: 60.0
-
-s_mech:
-  # Local Hugging Face id. Never the API model name (qwen/qwen3.8-27b is not
-  # a local repo and fails device_map). Set enabled: true only when those
-  # weights are on disk. If the primary model cannot load, the named fallback
-  # is tried once and the attempt is logged. Strict mode raises if both fail.
-  # There is no silent 0.5 score. enabled: false skips the download and
-  # records the signal as missing.
-  enabled: false
-  model_id: "Qwen/Qwen2.5-0.5B-Instruct"
-  fallback_model_id: "sshleifer/tiny-gpt2"
-  cache_dir: ".signal_cache/s_mech"
 
 llm_extract:
   json_mode: true

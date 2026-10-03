@@ -45,7 +45,6 @@ export interface Signals {
   s_ver: number;
   s_nli: number;
   s_ent: number;
-  s_mech: number;
 }
 
 export interface JudgeResult {

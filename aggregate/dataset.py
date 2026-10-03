@@ -30,6 +30,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 import logging
 from pathlib import Path
 from typing import Any, Dict, List, Optional
@@ -88,18 +89,31 @@ def row_to_features(row: Dict[str, Any]) -> Dict[str, Any]:
     # s_ver (pure)
     feats.update(s_ver_features(va))
 
-    # s_nli (pure)
-    feats.update(s_nli_features(va))
+    # s_nli
+    if "s_nli" in row and row["s_nli"] is not None:
+        feats["s_nli"] = float(row["s_nli"])
+        feats["nli_skipped"] = int(row.get("nli_skipped", 0) if "nli_skipped" in row else math.isnan(row["s_nli"]))
+    else:
+        feats.update(s_nli_features(va))
 
-    # s_ent (needs answer)
-    feats.update(s_ent_features(va, answer))
+    # s_ent
+    if "s_ent" in row and row["s_ent"] is not None:
+        feats["s_ent"] = float(row["s_ent"])
+        feats["s_ent_max"] = float(row.get("s_ent_max", row["s_ent"]))
+        feats["s_ent_skipped"] = int(row.get("s_ent_skipped", 0) if "s_ent_skipped" in row else math.isnan(row["s_ent"]))
+    else:
+        feats.update(s_ent_features(va, answer))
 
     # s_ret (needs rerank_score or rrf_rank). Missing evidence is an
     # indicator, not the constant 0.5.
     rerank_score = row.get("rerank_score")
     rrf_rank     = row.get("rrf_rank")
     n_chunks     = row.get("n_chunks", 6)
-    if rerank_score is not None:
+    
+    if "s_ret" in row and row["s_ret"] is not None:
+        feats["s_ret"] = float(row["s_ret"])
+        feats["s_ret_skipped"] = 0
+    elif rerank_score is not None:
         feats["s_ret"] = float(rerank_score)
         feats["s_ret_skipped"] = 0
     elif rrf_rank is not None:
@@ -116,14 +130,6 @@ def row_to_features(row: Dict[str, Any]) -> Dict[str, Any]:
     else:
         feats["s_div"] = float(row["s_div"])
         feats["s_div_skipped"] = int(row.get("s_div_skipped", 0))
-
-    # s_mech (expensive — pre-computed and stored in the row)
-    if row.get("s_mech") is None:
-        feats["s_mech"] = float("nan")
-        feats["s_mech_skipped"] = 1
-    else:
-        feats["s_mech"] = float(row["s_mech"])
-        feats["s_mech_skipped"] = int(row.get("s_mech_skipped", 0))
 
     # --- Atom type one-hot ---
     atom_type = row.get("type", "")
@@ -197,7 +203,6 @@ SIGNAL_COLS = [
     "s_ver",
     "s_nli", "nli_skipped",
     "s_ent", "s_ent_max", "s_ent_skipped",
-    "s_mech", "s_mech_skipped",
     "v1_match", "v1_mismatch", "v1_not_found", "v1_na",
 ]
 

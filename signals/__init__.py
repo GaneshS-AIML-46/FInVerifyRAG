@@ -10,12 +10,10 @@ Public API
         answer,
         rr,
         no_context_logprobs=None,   # optional
-        use_mech_cache=True,        # s_mech disk cache
     )
     # feats is a flat dict with all signal columns ready for the aggregator:
     # {s_div, s_ret, s_ver, s_nli, nli_skipped, s_ent, s_ent_max,
-    #  s_ent_skipped, s_mech, s_mech_skipped, v1_match, v1_mismatch,
-    #  v1_not_found, v1_na}
+    #  s_ent_skipped, v1_match, v1_mismatch, v1_not_found, v1_na}
 """
 from __future__ import annotations
 
@@ -26,7 +24,6 @@ from common.schemas import GeneratedAnswer, RetrievalResult, VerifiedAtom
 
 from signals.s_div import compute_s_div
 from signals.s_ent import s_ent_features
-from signals.s_mech import s_mech_features
 from signals.s_nli import s_nli_features
 from signals.s_ret import compute_s_ret
 from signals.s_ver import s_ver_features
@@ -37,7 +34,6 @@ def compute_all_signals(
     answer: GeneratedAnswer,
     rr: RetrievalResult,
     no_context_logprobs: Optional[List[float]] = None,
-    use_mech_cache: bool = True,
     strict: bool = False,
 ) -> dict:
     """
@@ -50,15 +46,13 @@ def compute_all_signals(
     rr                  : RetrievalResult (with rerank_scores in metadata if available).
     no_context_logprobs : Optional per-token logprobs of the no-context answer
                           (used for s_div Strategy B; Strategy A uses
-                          answer.metadata["no_context_answer"]).
-    use_mech_cache      : Whether to use disk cache for s_mech (default True).
+                          answer.metadata[\"no_context_answer\"]).
 
     Returns
     -------
     dict with keys:
         s_div, s_ret, s_ver, s_nli, nli_skipped,
         s_ent, s_ent_max, s_ent_skipped,
-        s_mech, s_mech_skipped,
         v1_match, v1_mismatch, v1_not_found, v1_na
     """
     feats: dict = {}
@@ -86,16 +80,56 @@ def compute_all_signals(
         feats["s_ret_skipped"] = 0
 
     # --- s_div: context divergence ---
-    div = compute_s_div(verified_atom, answer, no_context_logprobs)
+    div = compute_s_div(verified_atom, answer, no_context_logprobs, strict=strict)
     feats["s_div"] = div
     feats["s_div_skipped"] = int(isinstance(div, float) and math.isnan(div))
-
-    # --- s_mech: mechanistic lookback ratio ---
-    feats.update(s_mech_features(
-        verified_atom, answer, rr, use_cache=use_mech_cache, strict=strict,
-    ))
 
     return feats
 
 
-__all__ = ["compute_all_signals"]
+def validate_signals(records: List[dict], strict: bool = False) -> bool:
+    """
+    Validate that signals in a run did not fail or return a constant value
+    for all atoms in the run.
+
+    Raises StrictFailure in strict mode if any signal returned a constant value
+    across all atoms. Outside strict mode, prints the NOT PAPER-VALID banner and
+    returns False.
+    """
+    if len(records) < 2:
+        return True
+
+    from common.errors import StrictFailure, print_not_paper_valid_banner
+
+    signal_keys = ("s_div", "s_ret", "s_ver", "s_nli", "s_ent")
+    for k in signal_keys:
+        vals = []
+        for r in records:
+            if k in r:
+                vals.append(r[k])
+            elif "signals" in r and isinstance(r["signals"], dict) and k in r["signals"]:
+                vals.append(r["signals"][k])
+
+        if not vals or len(vals) < len(records):
+            continue
+
+        first = vals[0]
+        is_const = False
+        if first is None or (isinstance(first, float) and math.isnan(first)):
+            if all(v is None or (isinstance(v, float) and math.isnan(v)) for v in vals):
+                is_const = True
+        else:
+            if all(v == first for v in vals):
+                is_const = True
+
+        if is_const:
+            msg = f"Signal '{k}' returned a constant value ({first}) for all {len(records)} atoms in run."
+            if strict:
+                raise StrictFailure(msg)
+            print_not_paper_valid_banner(msg)
+            return False
+
+    return True
+
+
+__all__ = ["compute_all_signals", "validate_signals"]

@@ -11,7 +11,6 @@ Output files
 results/
   main_table.json         — RegGuard vs. all baselines
   ablation_table.json     — Signal / component ablation
-  drift_table.json        — 4 drift strategies comparison
   violation_rate.json     — Empirical violation rate distribution
   retrieval_metrics.json  — M2 recall/MRR evaluation
   extraction_metrics.json — M4 per-type recall/precision
@@ -23,7 +22,12 @@ Usage
     python -m eval.run_all [--results_dir RESULTS_DIR] [--seed SEED]
                            [--n_splits N_SPLITS] [--eps EPS] [--delta DELTA]
                            [--test_data TEST_JSONL] [--calib_data CALIB_JSONL]
-                           [--skip_baselines] [--skip_drift]
+                           [--skip_baselines]
+
+Note
+----
+The drift calibration experiment has been moved to experiments/drift/.
+It is NOT part of the main pipeline, summary.json, main_table, or ablation_table.
 """
 from __future__ import annotations
 
@@ -131,7 +135,6 @@ def run_all(
     calib_data:       Optional[str] = None,
     train_data:       Optional[str] = None,
     skip_baselines:   bool = False,
-    skip_drift:       bool = False,
     strict:           bool = False,
     gold_chunks:      Optional[str] = None,
     gold_atoms:       Optional[str] = None,
@@ -150,11 +153,14 @@ def run_all(
                      If None, uses synthetic data.
     calib_data     : Path to calibration JSONL.
     skip_baselines : Skip baseline comparison (for speed).
-    skip_drift     : Skip drift experiment (for speed).
 
     Returns
     -------
     dict with all results (also written to files).
+
+    Note
+    ----
+    The drift experiment is in experiments/drift/ and is not run here.
     """
     out_dir = Path(results_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -163,16 +169,39 @@ def run_all(
 
     all_results = {}
 
-    from common.errors import StrictFailure
+    from common.errors import StrictFailure, print_not_paper_valid_banner
     from common.experiment import provenance
+
+    paper_valid = True
+
+    # ── Check Condition 1: Missing aggregator ──────────────────────────────────
+    agg_path = ROOT / "models" / "aggregator" / "aggregator_v1.pkl"
+    if not agg_path.exists():
+        msg = "models/aggregator/aggregator_v1.pkl is missing (no weighted-average fallback)."
+        if strict:
+            raise StrictFailure(msg)
+        print_not_paper_valid_banner(msg)
+        paper_valid = False
 
     simulated = False
     # ── Load or generate data ──────────────────────────────────────────────────
     if test_data and Path(test_data).exists():
+        if "fixture" in str(test_data).lower():
+            msg = f"Metrics computed from fixtures ({test_data})."
+            if strict:
+                raise StrictFailure(msg)
+            print_not_paper_valid_banner(msg)
+            paper_valid = False
         import json as _json
-        rows = [_json.loads(l) for l in open(test_data, encoding="utf-8") if l.strip()]
-        risks     = [r["risk"] for r in rows]
-        labels    = [r["label"] for r in rows]
+        rows = []
+        for l in open(test_data, encoding="utf-8"):
+            if not l.strip(): continue
+            row = _json.loads(l)
+            if strict and row.get("synthetic"):
+                raise StrictFailure(f"Synthetic data found in {test_data}. Use real validation data.")
+            rows.append(row)
+        risks     = [r.get("risk", 0.0) for r in rows]
+        labels    = [r.get("label", "unsupported") for r in rows]
         decisions = [r.get("decision", "SUPPORTED") for r in rows]
         logger.info("Loaded %d test atoms from %s", len(risks), test_data)
     elif strict:
@@ -181,6 +210,9 @@ def run_all(
         )
     else:
         logger.info("No test_data provided; using synthetic data for a non-paper smoke path.")
+        msg = "Metrics computed from simulation (no test_data provided)."
+        print_not_paper_valid_banner(msg)
+        paper_valid = False
         risks, labels, decisions = _make_synthetic_data(n=500, error_rate=0.08, seed=seed)
         rows = [
             {"risk": r, "label": lab, "decision": dec}
@@ -188,16 +220,57 @@ def run_all(
         ]
         simulated = True
 
+    # ── Check Condition 2: Signal validation on rows ───────────────────────────
+    if len(rows) >= 2:
+        from signals import validate_signals
+        if not validate_signals(rows, strict=strict):
+            paper_valid = False
+
     cal_rows = rows
     if calib_data and Path(calib_data).exists():
         import json as _json
-        cal_rows = [_json.loads(l) for l in open(calib_data, encoding="utf-8") if l.strip()]
+        cal_rows = []
+        for l in open(calib_data, encoding="utf-8"):
+            if not l.strip(): continue
+            row = _json.loads(l)
+            if strict and row.get("synthetic"):
+                raise StrictFailure(f"Synthetic data found in {calib_data}. Use real validation data.")
+            cal_rows.append(row)
     train_rows = []
     if train_data and Path(train_data).exists():
         import json as _json
-        train_rows = [_json.loads(l) for l in open(train_data, encoding="utf-8") if l.strip()]
+        train_rows = []
+        for l in open(train_data, encoding="utf-8"):
+            if not l.strip(): continue
+            row = _json.loads(l)
+            if strict and row.get("synthetic"):
+                raise StrictFailure(f"Synthetic data found in {train_data}. Use real validation data.")
+            train_rows.append(row)
 
     accept_threshold = 0.35
+    # ── Check Condition 3: M7 heuristic threshold fallback ────────────────────
+    tp = ROOT / "models" / "guarantee" / "thresholds.json"
+    if tp.exists():
+        from guarantee.certify import load_thresholds
+        thresholds = load_thresholds(str(tp))
+        for s_name, th in thresholds.items():
+            n_acc = th.metadata.get("n_accepted") if hasattr(th, "metadata") and th.metadata else None
+            if th.accept_below is None or (n_acc is not None and n_acc == 0):
+                msg = f"Stratum '{s_name}' failed M7 certification: threshold={th.accept_below} accepts {n_acc} atoms."
+                print(msg)
+                if strict:
+                    raise StrictFailure(msg)
+                print_not_paper_valid_banner(msg)
+                paper_valid = False
+        if "*|*" in thresholds and thresholds["*|*"].accept_below is not None:
+            accept_threshold = thresholds["*|*"].accept_below
+    else:
+        msg = "Stratum '*|*' failed M7 certification: falling back to heuristic thresholds (accept<0.35, abstain>0.70)."
+        print(msg)
+        if strict:
+            raise StrictFailure(msg)
+        print_not_paper_valid_banner(msg)
+        paper_valid = False
 
     # ── Main table ─────────────────────────────────────────────────────────────
     logger.info("Building main comparison table...")
@@ -277,34 +350,16 @@ def run_all(
     _write(out_dir / "rc_curve.json", all_results["rc_curve"])
     logger.info("rc_curve.json written (AURC=%.4f).", aurc(rc_curve))
 
-    # ── Drift experiment ───────────────────────────────────────────────────────
-    if not skip_drift:
-        logger.info("Running drift experiment...")
-        from eval.drift_exp import run_drift_experiment
-        # Simulate pre/post split: first 60% = pre-amendment, last 40% = post
-        split_idx = int(len(risks) * 0.6)
-        drift_result = run_drift_experiment(
-            risks_pre=risks[:split_idx],   labels_pre=labels[:split_idx],
-            risks_post=risks[split_idx:],  labels_post=labels[split_idx:],
-            cutoff_date="2023-01-01",
-            eps=eps, delta=delta, seed=seed,
-        )
-        drift_table = drift_result.summary_table()
-        drift_table_out = {
-            "cutoff_date":   drift_result.cutoff_date,
-            "n_pre":         drift_result.n_pre,
-            "n_post":        drift_result.n_post,
-            "best_strategy": drift_result.best_strategy(),
-            "strategies":    drift_table,
-        }
-        all_results["drift_table"] = drift_table_out
-        _write(out_dir / "drift_table.json", drift_table_out)
-        logger.info("drift_table.json written. Best strategy: %s", drift_result.best_strategy())
-
     # ── Retrieval and extraction (gold files only; never simulated) ─────────
     from eval.gold import extraction_from_gold, retrieval_from_gold
     gold_c = gold_chunks or "data/gold/chunks.jsonl"
     gold_a = gold_atoms or "data/gold/atoms.jsonl"
+    if "fixture" in str(gold_c).lower() or "fixture" in str(gold_a).lower():
+        msg = "Metrics computed from fixtures."
+        if strict:
+            raise StrictFailure(msg)
+        print_not_paper_valid_banner(msg)
+        paper_valid = False
     ret_metrics = retrieval_from_gold(gold_c)
     ext_metrics = extraction_from_gold(gold_a)
     if strict and ret_metrics.get("status") != "computed":
@@ -344,6 +399,7 @@ def run_all(
         "retrieval_recall_at_6": ret_metrics.get("recall_at_6"),
         "retrieval_mrr":         ret_metrics.get("mrr"),
         "simulated":           simulated,
+        "paper_valid":         paper_valid,
         "full_regguard":       full_row,
         "generated_on":        date.today().isoformat(),
         **provenance(),
@@ -439,8 +495,8 @@ def _cli():
     parser.add_argument("--gold_chunks",    default=None)
     parser.add_argument("--gold_atoms",     default=None)
     parser.add_argument("--skip_baselines", action="store_true")
-    parser.add_argument("--skip_drift",     action="store_true")
-    parser.add_argument("--strict", action=argparse.BooleanOptionalAction, default=True)
+    from common.experiment import strict_default
+    parser.add_argument("--strict", action=argparse.BooleanOptionalAction, default=strict_default())
     args = parser.parse_args()
 
     common = dict(
@@ -451,7 +507,6 @@ def _cli():
         calib_data=args.calib_data,
         train_data=args.train_data,
         skip_baselines=args.skip_baselines,
-        skip_drift=args.skip_drift,
         strict=args.strict,
         gold_chunks=args.gold_chunks,
         gold_atoms=args.gold_atoms,

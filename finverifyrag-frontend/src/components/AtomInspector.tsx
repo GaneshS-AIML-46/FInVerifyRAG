@@ -131,7 +131,6 @@ function SignalsTab({ atom }: { atom: Atom }) {
     { signal: 's_ver',  label: 'Verification',value: atom.signals.s_ver,  desc: 'Deterministic verification score' },
     { signal: 's_nli',  label: 'NLI',         value: atom.signals.s_nli,  desc: 'Natural language inference score' },
     { signal: 's_ent',  label: 'Entropy',     value: atom.signals.s_ent,  desc: 'Prediction entropy (uncertainty)' },
-    { signal: 's_mech', label: 'Mechanical',  value: atom.signals.s_mech, desc: 'Rule-based mechanism score' },
   ];
   return (
     <div>

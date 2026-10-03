@@ -1,9 +1,10 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 import json, logging, sys, time
 from datetime import date
 from pathlib import Path
-ROOT = Path("s:/FYP/M0_M6-master")
-sys.path.insert(0, str(ROOT))
+ROOT = Path(__file__).resolve().parent.parent
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
 logging.basicConfig(level=logging.INFO,
     format="%(asctime)s  %(name)-24s %(levelname)s  %(message)s", datefmt="%H:%M:%S")
 logger = logging.getLogger("run_real_pipeline")
@@ -14,13 +15,13 @@ QUERIES = [
     {"question": "What are the disclosure requirements for listed companies under SEBI LODR regulations?", "query_date": "2024-01-01", "family": "section"},
     {"question": "What is the penalty for non-compliance with SEBI Insider Trading regulations?", "query_date": "2024-01-01", "family": "entity"},
 ]
-def run_queries():
+def run_queries(strict: bool = True):
     from app.pipeline import run_pipeline
     all_atoms, query_results = [], []
     for i, q in enumerate(QUERIES, 1):
         logger.info("QUERY %d/%d: %s", i, len(QUERIES), q["question"][:70])
         t0 = time.time()
-        result = run_pipeline(question=q["question"], query_date=q["query_date"], skip_judge=False, rewrite_mode="flag")
+        result = run_pipeline(question=q["question"], query_date=q["query_date"], skip_judge=False, rewrite_mode="flag", strict=strict)
         elapsed = time.time() - t0
         print(f"\n{'='*70}")
         print(f"QUERY {i}: {q['question']}")
@@ -53,10 +54,16 @@ def run_queries():
             "coverage": result.verification.coverage, "n_atoms": len(result.atoms),
             "latency": result.latency, "elapsed": elapsed})
     return all_atoms, query_results
-def run_m7():
+
+
+def run_m7(strict: bool = True):
     import numpy as np
+    from common.errors import StrictFailure, print_not_paper_valid_banner
     from guarantee.ltt import ltt_threshold, simulate_violation_rate
     logger.info("Running M7 guarantee certification (LTT)...")
+    if strict:
+        raise StrictFailure("run_m7 in run_real_pipeline computes metrics from simulation. Refusing simulated calibration pool in strict mode.")
+    print_not_paper_valid_banner("M7 metrics computed from simulation.")
     rng = np.random.RandomState(42)
     n_calib = 300
     risk_arr = rng.beta(2, 5, n_calib)
@@ -65,16 +72,8 @@ def run_m7():
     sim = simulate_violation_rate(risk_arr, wrong_arr, eps=0.05, delta=0.10, n_splits=200, seed=42)
     logger.info("M7 threshold=%.4f viol_rate=%.4f", threshold or -1, sim.get("violation_rate", -1))
     return {"threshold": threshold, "simulate": sim}
-def run_m10(all_atoms):
-    from eval.run_all import run_all
-    results_dir = ROOT / "results"
-    results_dir.mkdir(exist_ok=True)
-    test_jsonl = results_dir / "real_test_atoms.jsonl"
-    with open(test_jsonl, "w") as f:
-        for a in all_atoms:
-            f.write(json.dumps(a) + "\n")
-    logger.info("Written %d real atoms to %s", len(all_atoms), test_jsonl)
-    return run_all(results_dir=str(results_dir), seed=42, n_splits=500, eps=0.05, delta=0.10, test_data=str(test_jsonl))
+
+
 def print_report(qr, m10, m7):
     print("\n\n" + "="*70)
     print("  RegGuard M0->M10 REAL DATASET PIPELINE REPORT")
@@ -106,16 +105,36 @@ def print_report(qr, m10, m7):
         p = ROOT / "results" / fname
         print(f"  {'OK' if p.exists() else 'MISSING'} {fname}")
     print("="*70)
+
+
+def run_m10(all_atoms, strict: bool = True):
+    from eval.run_all import run_all
+    results_dir = ROOT / "results"
+    results_dir.mkdir(exist_ok=True)
+    test_jsonl = results_dir / "real_test_atoms.jsonl"
+    with open(test_jsonl, "w") as f:
+        for a in all_atoms:
+            f.write(json.dumps(a) + "\n")
+    logger.info("Written %d real atoms to %s", len(all_atoms), test_jsonl)
+    return run_all(results_dir=str(results_dir), seed=42, n_splits=500, eps=0.05, delta=0.10, test_data=str(test_jsonl), strict=strict)
+
+
 def main():
+    import argparse
+    from common.experiment import strict_default
+    parser = argparse.ArgumentParser(description="RegGuard real dataset pipeline runner")
+    parser.add_argument("--strict", action=argparse.BooleanOptionalAction, default=strict_default())
+    args = parser.parse_args()
+
     print("\n" + "="*70)
     print("  RegGuard: End-to-End Pipeline with REAL DATASET")
     print("  M0->M1(done)->M2->M3->M4->M5->M6->M7->M8->M9->M10")
     print(f"  Dataset: 42,986 chunks (1,827 RBI + 638 SEBI PDFs)")
     print("="*70+"\n")
-    all_atoms, query_results = run_queries()
+    all_atoms, query_results = run_queries(strict=args.strict)
     logger.info("Collected %d atoms from %d queries.", len(all_atoms), len(QUERIES))
-    m7_result = run_m7()
-    m10_results = run_m10(all_atoms)
+    m7_result = run_m7(strict=args.strict)
+    m10_results = run_m10(all_atoms, strict=args.strict)
     print_report(query_results, m10_results, m7_result)
     report_path = ROOT / "results" / "pipeline_report.json"
     with open(report_path, "w") as f:
@@ -127,4 +146,7 @@ def main():
             }, "m10_summary": m10_results.get("summary", {})},
             f, indent=2, default=str)
     logger.info("Report saved: %s", report_path)
-main()
+
+
+if __name__ == "__main__":
+    main()

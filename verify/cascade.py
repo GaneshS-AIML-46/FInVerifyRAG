@@ -56,6 +56,7 @@ def verify(
     rr: RetrievalResult,
     nli_model_path: Optional[str] = None,
     skip_v2: bool = False,
+    strict: bool = False,
 ) -> List[VerifiedAtom]:
     """
     Run the V1 → V2 verification cascade on a list of atoms.
@@ -72,6 +73,8 @@ def verify(
     skip_v2 : bool
         If True, skip V2 entirely (useful for fast tests / when model
         is not yet trained). Atoms that would go to V2 get v2_entail_prob=None.
+    strict : bool
+        If True, raise exceptions if NLI model fails to load or predict.
 
     Returns
     -------
@@ -108,13 +111,15 @@ def verify(
             hypothesis = _atom_to_sentence(atom)
             premise = best_evidence(hypothesis, chunk_text_list)
             try:
-                p_e, p_c, p_n = nli.predict(premise, hypothesis)
+                p_e, p_c, p_n = nli.predict(premise, hypothesis, strict=strict)
                 v2_entail_prob = round(p_e, 4)
                 logger.debug(
                     "V2 for atom %s: p_entail=%.3f, p_contra=%.3f, p_neutral=%.3f",
                     atom.atom_id, p_e, p_c, p_n,
                 )
             except Exception as exc:
+                if strict:
+                    raise
                 logger.warning("V2 prediction failed for atom %s: %s", atom.atom_id, exc)
                 v2_entail_prob = None
 

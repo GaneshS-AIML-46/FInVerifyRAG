@@ -101,7 +101,7 @@ class NLIVerifier:
     # ------------------------------------------------------------------
 
     def predict(
-        self, premise: str, hypothesis: str
+        self, premise: str, hypothesis: str, strict: bool = False
     ) -> Tuple[float, float, float]:
         """
         Run NLI on (premise, hypothesis).
@@ -113,6 +113,9 @@ class NLIVerifier:
         Falls back to (0.5, 0.25, 0.25) if the model is unavailable.
         """
         if _pipeline is None:
+            if strict:
+                from common.errors import StrictFailure
+                raise StrictFailure("Signal 's_nli' failed to load NLI model pipeline.")
             logger.debug("NLI pipeline unavailable; returning neutral fallback.")
             return (0.5, 0.25, 0.25)
 
@@ -135,8 +138,17 @@ class NLIVerifier:
                 )
                 score_map = dict(zip(result["labels"], result["scores"]))
             except Exception as exc:
+                if strict:
+                    from common.errors import StrictFailure
+                    raise StrictFailure(f"Signal 's_nli' prediction failed: {exc}") from exc
                 logger.warning("NLI prediction failed: %s. Returning neutral.", exc)
                 return (0.5, 0.25, 0.25)
+        except Exception as exc:
+            if strict:
+                from common.errors import StrictFailure
+                raise StrictFailure(f"Signal 's_nli' prediction failed: {exc}") from exc
+            logger.warning("NLI prediction failed: %s. Returning neutral.", exc)
+            return (0.5, 0.25, 0.25)
 
         p_e = score_map.get("entailment", 0.333)
         p_c = score_map.get("contradiction", 0.333)

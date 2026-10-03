@@ -11,7 +11,7 @@ This document tracks the migration and completion status of the RegGuard modular
 | **M3** | `generation/`| ✅ Complete | vLLM Generation, Prompt v1, Citation extraction, Logprob capturing, No-context baseline extraction |
 | **M4** | `atoms/` | ✅ Complete | Two-pass extraction (Regex fast-pass + LLM), 6 atom types, span alignment, dedup, "Not found" short-circuit |
 | **M5** | `verify/` | ✅ Complete | V1 Deterministic Normalizers + Literal Verifier, V2 NLI (DeBERTa-v3-large lazy loader), Cascade, NLI Data Perturbers, NLI Fine-tune Train Script |
-| **M6** | `signals/` | ✅ Complete | `s_div`, `s_ret`, `s_ver`, `s_nli`, `s_ent`, `s_mech` signals, `compute_all_signals()` dispatcher, LightGBM Aggregator (`dataset.py`, `train.py`, `calibrate_probs.py`, `model.py`), `configs/signals.yaml` |
+| **M6** | `signals/` | ✅ Complete | `s_div`, `s_ret`, `s_ver`, `s_nli`, `s_ent` signals, `compute_all_signals()` dispatcher, LightGBM Aggregator (`dataset.py`, `train.py`, `calibrate_probs.py`, `model.py`), `configs/signals.yaml` |
 | **M7** | `guarantee/` | ✅ Complete | Learn-then-Test (LTT) with Binomial & Hoeffding-Bentkus p-values, Fixed-sequence threshold selection, Mondrian stratification (regulator×atom_type) with Bonferroni delta, 4 Drift-aware strategies (static/sliding_window/recency_weighted/triggered), KS + MMD + version-graph drift detectors, `certify.py` end-to-end pipeline, `thresholds.json` output with `Thresholds` schema. 63 tests ✅. |
 | **M8** | `judge/` + `decision/` | ✅ Complete | V3 LLM judge (evidence-only, call-capped), JSON parse with retry, Decision router (SUPPORTED/UNCERTAIN/ABSTAINED) with M7 fallback chain, answer-level combination (FULLY_SUPPORTED/PARTIALLY_VERIFIED/ABSTAINED), answer rewrite (flag/trim/stub modes). 53 tests ✅. |
 | **M9** | `app/` | ✅ Complete | FastAPI `/ask` endpoint, `app/pipeline.py` (M2→M8 chain), `app/badge.py` (risk/status badges), Streamlit page `2_RegGuard_QA.py` (atom highlights, sources, session history). 66 tests ✅. |
@@ -63,8 +63,7 @@ This document tracks the migration and completion status of the RegGuard modular
 - **`signals/s_ent.py`**: Mean/max token entropy from logprobs over atom's character span (normalized to [0,1] with `max_clip=5.0`).
 - **`signals/s_ret.py`**: Retrieval reranker score for the cited chunk (min-max normalized); rank-based fallback when no reranker scores.
 - **`signals/s_div.py`**: Context divergence = `1 - cosine_sim(claim, no_context_answer)` via BGE-small; Strategy B uses KL over token logprob spans.
-- **`signals/s_mech.py`**: Lookback ratio from Qwen attention weights (`1 - attn_to_prompt/attn_total`); disk-cached; falls back to 0.5 when no GPU.
-- **`signals/__init__.py`**: `compute_all_signals()` — single entry point returning flat feature dict for all 6 signals.
+- **`signals/__init__.py`**: `compute_all_signals()` — single entry point returning flat feature dict for all 5 signals.
 - **`aggregate/dataset.py`**: Builds feature table (Parquet) from labeled JSONL atoms with all signals + atom-type/regulator one-hots.
 - **`aggregate/train.py`**: LogReg baseline + LightGBM (300 trees, lr=0.05, max_depth=4); cross-validates by question_family; saves `aggregator_v1.pkl` + ablation table.
 - **`aggregate/calibrate_probs.py`**: Isotonic regression (≥1000 samples) or Platt scaling calibration on val split.

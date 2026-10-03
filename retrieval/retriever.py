@@ -73,7 +73,7 @@ class Retriever:
         6. Cross-encoder reranking → top final_k.
         """
         if not query_date:
-            query_date = date.today().strftime("%Y-%m-%d")
+            raise ValueError("query_date must be provided.")
 
         # Stage 1: Sparse search
         bm25_ids = self.bm25.search(query, top_k=top_k_bm25)

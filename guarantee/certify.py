@@ -117,6 +117,7 @@ def certify(
     n_sim_splits:   int   = 500,
     seed:           int   = 42,
     reference_date: Optional[str] = None,
+    strict:         bool  = False,
 ) -> Dict[str, Thresholds]:
     """
     Build certified thresholds for every Mondrian stratum and save to JSON.
@@ -236,6 +237,13 @@ def certify(
             status = "not_certifiable"
             if n_acc == 0:
                 accept_below = None
+            msg = f"Stratum '{name}' failed M7 certification: threshold={accept_below} accepts {n_acc} atoms."
+            print(msg)
+            if strict:
+                from common.errors import StrictFailure
+                raise StrictFailure(msg)
+            from common.errors import print_not_paper_valid_banner
+            print_not_paper_valid_banner(msg)
             logger.warning(
                 "Stratum %s: not_certifiable (empirical_risk=%.3f, n=%d, need=%d).",
                 name, stratum.empirical_risk, stratum.n_atoms, need,
@@ -331,11 +339,14 @@ def load_thresholds(path: str) -> Dict[str, Thresholds]:
 
     result = {}
     for name, entry in data.items():
-        result[name] = Thresholds(
+        th = Thresholds(
             stratum_name=entry["stratum_name"],
             accept_below=entry["accept_below"],
             abstain_above=entry["abstain_above"],
         )
+        if "metadata" in entry:
+            th.metadata = entry["metadata"]
+        result[name] = th
     logger.info("Loaded %d thresholds from %s", len(result), path)
     return result
 
@@ -421,6 +432,8 @@ if __name__ == "__main__":
     parser.add_argument("--n_sim_splits",   type=int,   default=500)
     parser.add_argument("--seed",           type=int,   default=42)
     parser.add_argument("--reference_date", default=None)
+    from common.experiment import strict_default
+    parser.add_argument("--strict", action=argparse.BooleanOptionalAction, default=strict_default())
 
     args = parser.parse_args()
     certify(
@@ -439,4 +452,5 @@ if __name__ == "__main__":
         n_sim_splits=args.n_sim_splits,
         seed=args.seed,
         reference_date=args.reference_date,
+        strict=args.strict,
     )

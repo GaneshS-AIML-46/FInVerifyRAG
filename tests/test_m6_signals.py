@@ -1,7 +1,7 @@
 """
 tests/test_m6_signals.py
 -------------------------
-Unit tests for all 6 M6 signals and the compute_all_signals() dispatcher.
+Unit tests for all 5 M6 signals and the compute_all_signals() dispatcher.
 
 Coverage:
   - s_ver: all 4 V1 status codes (MATCH, MISMATCH, NOT_FOUND, NA) + one-hot
@@ -9,11 +9,7 @@ Coverage:
   - s_ent: logprobs present / absent; mean & max entropy correct
   - s_ret: rerank_scores path; rank-based fallback; missing cited_chunk
   - s_div: no_context_answer absent → 0.5 neutral
-  - s_mech: model unavailable → 0.5 fallback + skipped flag
   - compute_all_signals: keys present; values in [0, 1]
-
-Note: s_mech tests mock _compute_lookback_from_model to avoid downloading
-the Qwen model (expensive GPU computation). The fallback path is tested.
 """
 from __future__ import annotations
 
@@ -33,7 +29,6 @@ from signals.s_nli import compute_s_nli, s_nli_features
 from signals.s_ent import compute_s_ent, s_ent_features
 from signals.s_ret import compute_s_ret
 from signals.s_div import compute_s_div
-from signals.s_mech import s_mech_features
 from signals import compute_all_signals
 
 
@@ -342,81 +337,15 @@ class TestSDiv:
 
 
 # ===========================================================================
-# s_mech tests
-# ===========================================================================
-
-class TestSMech:
-    def test_fallback_when_no_model(self):
-        """s_mech returns fallback dict when model is not available."""
-        va = _make_verified()
-        ans = _make_answer()
-        rr = _make_rr()
-        # Patch out the heavy model call so no download is attempted
-        with patch("signals.s_mech._compute_lookback_from_model", return_value=None):
-            f = s_mech_features(va, ans, rr, use_cache=False)
-        # Must always return these two keys
-        assert "s_mech" in f
-        assert "s_mech_skipped" in f
-        if f["s_mech_skipped"]:
-            assert math.isnan(f["s_mech"])
-        else:
-            assert 0.0 <= f["s_mech"] <= 1.0
-
-    def test_fallback_value_is_neutral(self):
-        """When model returns None (unavailable), s_mech = 0.5 and skipped = 1."""
-        va = _make_verified()
-        ans = _make_answer()
-        rr = _make_rr()
-        with patch("signals.s_mech._compute_lookback_from_model", return_value=None):
-            f = s_mech_features(va, ans, rr, use_cache=False)
-        assert f["s_mech_skipped"] == 1
-        assert math.isnan(f["s_mech"])
-        assert f.get("s_mech_error")
-
-    def test_model_available_uses_lookback(self):
-        """When model returns a lookback ratio, s_mech = 1 - ratio."""
-        va = _make_verified()
-        ans = _make_answer()
-        rr = _make_rr()
-        # Simulate model returning lookback_ratio = 0.8 → s_mech = 0.2
-        with patch("signals.s_mech._compute_lookback_from_model", return_value=0.8):
-            f = s_mech_features(va, ans, rr, use_cache=False)
-        assert f["s_mech_skipped"] == 0
-        assert abs(f["s_mech"] - 0.2) < 1e-4
-
-    def test_high_lookback_low_s_mech(self):
-        """High attention to evidence → low s_mech (well grounded)."""
-        va = _make_verified()
-        ans = _make_answer()
-        rr = _make_rr()
-        with patch("signals.s_mech._compute_lookback_from_model", return_value=0.95):
-            f = s_mech_features(va, ans, rr, use_cache=False)
-        assert f["s_mech"] < 0.1
-
-    def test_low_lookback_high_s_mech(self):
-        """Low attention to evidence → high s_mech (relies on prior)."""
-        va = _make_verified()
-        ans = _make_answer()
-        rr = _make_rr()
-        with patch("signals.s_mech._compute_lookback_from_model", return_value=0.05):
-            f = s_mech_features(va, ans, rr, use_cache=False)
-        assert f["s_mech"] > 0.9
-
-
-# ===========================================================================
 # compute_all_signals integration test
 # ===========================================================================
-
-_MECH_PATCH = "signals.s_mech._compute_lookback_from_model"
-
 
 class TestComputeAllSignals:
     def test_returns_all_expected_keys(self):
         va = _make_verified(v1_status="MATCH", v2_entail_prob=0.9)
         ans = _make_answer(logprobs=[math.log(0.8)] * 10)
         rr = _make_rr(rerank_scores={"chunk-001": 0.85})
-        with patch(_MECH_PATCH, return_value=None):
-            feats = compute_all_signals(va, ans, rr, use_mech_cache=False)
+        feats = compute_all_signals(va, ans, rr)
 
         expected_keys = {
             "s_ver", "v1_match", "v1_mismatch", "v1_not_found", "v1_na",
@@ -424,7 +353,6 @@ class TestComputeAllSignals:
             "s_ent", "s_ent_max", "s_ent_skipped",
             "s_ret",
             "s_div",
-            "s_mech", "s_mech_skipped",
         }
         for key in expected_keys:
             assert key in feats, f"Missing signal key: {key}"
@@ -433,8 +361,7 @@ class TestComputeAllSignals:
         va = _make_verified(v1_status="NOT_FOUND", v2_entail_prob=0.3)
         ans = _make_answer(logprobs=[math.log(0.5)] * 15)
         rr = _make_rr()
-        with patch(_MECH_PATCH, return_value=None):
-            feats = compute_all_signals(va, ans, rr, use_mech_cache=False)
+        feats = compute_all_signals(va, ans, rr)
 
         for key, val in feats.items():
             if isinstance(val, float) and math.isnan(val):
@@ -446,8 +373,7 @@ class TestComputeAllSignals:
         va = _make_verified(v1_status="MISMATCH", v2_entail_prob=0.05)
         ans = _make_answer()
         rr = _make_rr()
-        with patch(_MECH_PATCH, return_value=None):
-            feats = compute_all_signals(va, ans, rr, use_mech_cache=False)
+        feats = compute_all_signals(va, ans, rr)
         assert feats["s_ver"] == 1.0
         assert feats["v1_mismatch"] == 1
 
@@ -455,8 +381,7 @@ class TestComputeAllSignals:
         va = _make_verified(v1_status="MATCH", v2_entail_prob=0.95)
         ans = _make_answer(logprobs=[0.0] * 10)   # high confidence
         rr = _make_rr(rerank_scores={"chunk-001": 0.95})
-        with patch(_MECH_PATCH, return_value=None):
-            feats = compute_all_signals(va, ans, rr, use_mech_cache=False)
+        feats = compute_all_signals(va, ans, rr)
         # Low risk signals
         assert feats["s_ver"] == 0.0
         assert feats["s_nli"] < 0.1
@@ -466,8 +391,7 @@ class TestComputeAllSignals:
         va = _make_verified(v1_status="NA", v2_entail_prob=None)
         ans = _make_answer(logprobs=None, no_context_answer="")
         rr = _make_rr()
-        with patch(_MECH_PATCH, return_value=None):
-            feats = compute_all_signals(va, ans, rr, use_mech_cache=False)
+        feats = compute_all_signals(va, ans, rr)
         # Fallback values
         assert math.isnan(feats["s_nli"])
         assert feats["nli_skipped"] == 1

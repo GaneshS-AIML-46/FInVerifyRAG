@@ -55,34 +55,6 @@ def test_json_repair_pulls_array_out_of_prose():
     assert parsed[0]["type"] == "RATE"
 
 
-def test_s_mech_supported_and_unsupported_differ():
-    from common.schemas import Atom, Chunk, GeneratedAnswer, RetrievalResult, VerifiedAtom
-    from signals.s_mech import s_mech_features
-
-    evidence = "Banks shall maintain CRR at 4.5 percent of NDTL."
-    supported = VerifiedAtom(
-        atom=Atom(atom_id="s", type="RATE", text=evidence, claim=evidence, span=(0, 20)),
-        v1_status="MATCH",
-    )
-    unsupported = VerifiedAtom(
-        atom=Atom(atom_id="u", type="RATE", text="The CRR is 9 percent.", claim="The CRR is 9 percent.", span=(0, 10)),
-        v1_status="MISMATCH",
-    )
-    ans_s = GeneratedAnswer(query="q", answer_text=evidence, citations=[], metadata={})
-    ans_u = GeneratedAnswer(query="q", answer_text="The CRR is 9 percent.", citations=[], metadata={})
-    chunk = Chunk(chunk_id="c", text=evidence, regulator="RBI", issue_date="2024-01-01", source_url="")
-    rr = RetrievalResult(query="q", query_date="2026-09-01", chunks=[chunk], metadata={})
-
-    def stub(answer, rr, start, end):
-        ev = " ".join(c.text for c in rr.chunks)
-        return 0.9 if ev[:24] in answer.answer_text else 0.1
-
-    with patch("signals.s_mech._compute_lookback_from_model", side_effect=stub):
-        good = s_mech_features(supported, ans_s, rr, use_cache=False)
-        bad = s_mech_features(unsupported, ans_u, rr, use_cache=False)
-    assert good["s_mech"] < bad["s_mech"]
-
-
 def test_strict_score_refuses_missing_aggregator(tmp_path):
     from aggregate.model import score
     from common.schemas import Atom, GeneratedAnswer, RetrievalResult, VerifiedAtom
@@ -92,9 +64,8 @@ def test_strict_score_refuses_missing_aggregator(tmp_path):
     )
     ans = GeneratedAnswer(query="q", answer_text="4.5%", citations=[], token_logprobs=[0.0], metadata={"no_context_answer": "x"})
     rr = RetrievalResult(query="q", query_date="2026-01-01", chunks=[], metadata={})
-    with patch("signals.s_mech._compute_lookback_from_model", return_value=0.8):
-        with pytest.raises(StrictFailure):
-            score([va], ans, rr, model_path=str(tmp_path / "missing.pkl"), strict=True, use_mech_cache=False)
+    with pytest.raises(StrictFailure):
+        score([va], ans, rr, model_path=str(tmp_path / "missing.pkl"), strict=True)
 
 
 def test_ltt_certificate_not_a_bare_none_on_tiny_data():
@@ -151,7 +122,7 @@ def test_untouched_test_is_separate_from_calibration():
 
 
 def test_drift_strategies_differ_on_synthetic_drift():
-    from eval.drift_exp import run_drift_experiment
+    from experiments.drift.drift_exp import run_drift_experiment
     # Early pre period is correct and low risk. Recent pre and all post are wrong.
     risks_pre = [0.1] * 120 + [0.9] * 40
     labels_pre = ["supported"] * 120 + ["unsupported"] * 40
@@ -227,7 +198,6 @@ def test_baselines_have_distinct_aurc():
             "s_ver": 0.0 if i % 4 else 1.0,
             "s_ret": 0.7,
             "s_div": 0.3 + (i % 7) * 0.1,
-            "s_mech": 0.4,
         }
         (cal if i < 15 else test).append(row)
     names = ["RegGuard (ours)", "plain_rag", "selfcheck", "nli_only", "llm_judge_all", "conformal_no_mondrian"]

@@ -149,17 +149,19 @@ class LLMAtomExtractor:
 
         try:
             raw_atoms = loads_atom_json(raw_text)
-        except json.JSONDecodeError:
-            logger.warning("Invalid JSON from atom extraction. Retrying once. Raw: %s", raw_text[:200])
+        except Exception as exc:
+            logger.warning("Invalid JSON from atom extraction. Retrying once. Error: %s", exc)
             repair_prompt = (
                 "The following text was supposed to be a JSON array of atoms. "
+                "It failed to parse with the following error:\n"
+                f"{str(exc)}\n\n"
                 "Return only a valid JSON array, with no prose.\n\n"
                 + raw_text
             )
             repaired = self._request_json(repair_prompt)
             try:
                 raw_atoms = loads_atom_json(repaired)
-            except json.JSONDecodeError:
+            except Exception:
                 self.parse_failures += 1
                 logger.error(
                     "Atom JSON parse failed after repair (%d/%d).",

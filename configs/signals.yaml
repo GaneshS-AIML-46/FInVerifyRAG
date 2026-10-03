@@ -29,13 +29,6 @@ s_ent:
   # Heuristic: characters per token for span approximation
   chars_per_token: 4
 
-# ── Signal: s_mech (Mechanistic / Lookback Ratio) ───────────────────────────
-s_mech:
-  # Generator model for attention extraction
-  model_id: "Qwen/Qwen2.5-7B-Instruct"
-  # Disk cache for expensive attention computations
-  cache_dir: ".signal_cache/s_mech"
-
 # ── Aggregator (LightGBM) ───────────────────────────────────────────────────
 aggregator:
   # Training
@@ -61,9 +54,8 @@ calibration:
 
 # ── Fallback Weights (used when model not yet trained) ───────────────────────
 fallback_weights:
-  s_ver:  0.30
-  s_nli:  0.25
+  s_ver:  0.35
+  s_nli:  0.30
   s_ent:  0.15
   s_ret:  0.10   # inverted internally: high s_ret = good = lower risk
   s_div:  0.10   # inverted internally: high s_div = grounded = lower risk
-  s_mech: 0.10

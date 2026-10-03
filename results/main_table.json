@@ -1,50 +1,5 @@
 {
-  "system": [
-    "RegGuard (ours)",
-    "plain_rag",
-    "selfcheck",
-    "nli_only",
-    "llm_judge_all",
-    "conformal_no_mondrian"
-  ],
-  "hallucination_rate": [
-    0.0,
-    0.5,
-    0.333333,
-    0.285714,
-    0.230769,
-    0.333333
-  ],
-  "coverage": [
-    0.5,
-    1.0,
-    0.45,
-    0.35,
-    0.65,
-    0.45
-  ],
-  "aurc": [
-    0.22669,
-    0.22669,
-    0.22669,
-    0.22669,
-    0.22669,
-    0.22669
-  ],
-  "violation_rate": [
-    0.0,
-    0.9,
-    0.9,
-    0.9,
-    0.9,
-    0.9
-  ],
-  "judge_call_rate": [
-    0.5,
-    0.0,
-    0.0,
-    0.0,
-    1.0,
-    0.0
-  ]
+  "status": "not_available",
+  "reason": "per-system risks require signal columns on held-out atoms",
+  "simulated": false
 }

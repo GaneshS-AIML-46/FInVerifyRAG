@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env python3
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
 scripts/run_full_eval.py  --  RegGuard M0->M10 End-to-End Evaluation
@@ -45,6 +45,24 @@ def _make_default_thresholds():
     return {s: Thresholds(stratum_name=s, accept_below=0.35, abstain_above=0.70) for s in strata}
 
 
+
+_DOC_DATES = None
+def _load_doc_dates():
+    global _DOC_DATES
+    if _DOC_DATES is not None:
+        return _DOC_DATES
+    import csv, os
+    _DOC_DATES = {}
+    path = "data/doc_dates.csv"
+    if os.path.exists(path):
+        with open(path, "r", encoding="utf-8") as f:
+            for row in csv.DictReader(f):
+                _DOC_DATES[row["doc_id"]] = {
+                    "effective_from": row["effective_from"] or None,
+                    "effective_to": row["effective_to"] or None
+                }
+    return _DOC_DATES
+
 def _old_chunk_to_new(oc):
     from common.schemas import Chunk
     meta = oc.metadata or {}
@@ -52,8 +70,20 @@ def _old_chunk_to_new(oc):
     reg = "RBI" if "RBI" in issuer else ("SEBI" if "SEBI" in issuer else issuer or "UNKNOWN")
     yr = str(meta.get("year", ""))
     iss = f"{yr}-01-01" if yr.isdigit() else "1970-01-01"
+    
+    doc_dates = _load_doc_dates()
+    doc_id = meta.get("doc_id", "")
+    eff_from = doc_dates.get(doc_id, {}).get("effective_from") or iss
+    eff_to = doc_dates.get(doc_id, {}).get("effective_to")
+    
+    # Store them in metadata so VersionGraph and temporal filters can use them.
+    meta["effective_from"] = eff_from
+    if eff_to:
+        meta["effective_to"] = eff_to
+        
     return Chunk(chunk_id=oc.chunk_id, text=oc.text, regulator=reg,
-                 issue_date=iss, source_url=meta.get("file_path", ""), metadata=meta)
+                 issue_date=iss, effective_from=eff_from, effective_to=eff_to,
+                 source_url=meta.get("file_path", ""), metadata=meta)
 
 
 def build_retriever():
@@ -88,27 +118,25 @@ def build_retriever():
     return Retriever(bm25_index=bm25_obj, dense_index=dense, reranker=reranker, version_graph=vg)
 
 
-def build_generator():
-    logger.info("M3: Generator model=%s", os.environ.get("LLM_MODEL"))
+def build_generator(exp):
+    logger.info("M3: Generator model=%s", exp.get("generator_provider", {}).get("model"))
     from common.llm_client import LLMClient
     from generation.generator import Generator
-    llm = LLMClient(base_url=os.environ.get("LLM_BASE_URL"),
-                    api_key=os.environ.get("LLM_API_KEY"),
-                    default_model=os.environ.get("LLM_MODEL"))
+    llm = LLMClient(config=exp.get("generator_provider", {}))
     return Generator(llm_client=llm)
 
 
-def build_judge():
+def build_judge(exp):
     logger.info("M8: Initialising judge LLM...")
     try:
         from judge.judge_llm import JudgeLLM
-        j = JudgeLLM(); logger.info("  JudgeLLM ready"); return j
+        j = JudgeLLM(config=exp.get("judge_provider", {})); logger.info("  JudgeLLM ready"); return j
     except Exception as e:
         logger.warning("  JudgeLLM unavailable (%s) -- skip_judge=True", e)
         return None
 
 
-def run_one_query(question, query_date, retriever, generator, thresholds, judge, strict=True):
+def run_one_query(question, query_date, retriever, generator, thresholds, judge, exp, strict=True):
     from atoms.extractor import extract
     from verify.cascade import verify
     from aggregate.model import score
@@ -122,26 +150,37 @@ def run_one_query(question, query_date, retriever, generator, thresholds, judge,
     t = time.perf_counter(); answer = generator.generate(rr); lat["generate"] = round(time.perf_counter()-t,3)
     logger.info("  M3: %d chars (%.3fs)", len(answer.answer_text), lat["generate"])
 
-    t = time.perf_counter(); atoms = extract(answer); lat["extract"] = round(time.perf_counter()-t,3)
+    t = time.perf_counter(); atoms = extract(answer, config=exp.get("extractor_provider", {})); lat["extract"] = round(time.perf_counter()-t,3)
     logger.info("  M4: %d atoms (%.3fs)", len(atoms), lat["extract"])
 
-    t = time.perf_counter(); v_atoms = verify(atoms, rr); lat["verify"] = round(time.perf_counter()-t,3)
+    t = time.perf_counter(); v_atoms = verify(atoms, rr, strict=strict); lat["verify"] = round(time.perf_counter()-t,3)
     logger.info("  M5: %d verified (%.3fs)", len(v_atoms), lat["verify"])
 
     t = time.perf_counter(); s_atoms = score(v_atoms, answer, rr, strict=strict); lat["score"] = round(time.perf_counter()-t,3)
     logger.info("  M6: %d scored (%.3fs)", len(s_atoms), lat["score"])
 
     t = time.perf_counter()
-    ad = m8_decide(scored_atoms=s_atoms, thresholds=thresholds, judge=judge, rr=rr, answer=answer, skip_judge=(judge is None))
+    ad = m8_decide(scored_atoms=s_atoms, thresholds=thresholds, judge=judge, rr=rr, answer=answer, skip_judge=(judge is None), mode=exp.get('judge_mode', 'selective'))
     lat["decide"] = round(time.perf_counter()-t,3)
     logger.info("  M8: %s (%.3fs)", ad.summary(), lat["decide"])
 
     t = time.perf_counter(); rw = rewrite_answer(answer=answer, answer_decision=ad, mode="flag"); lat["rewrite"] = round(time.perf_counter()-t,3)
 
-    atom_rows = [{"risk": d.risk,
-                  "label": "supported" if d.final_status in ("SUPPORTED","VERIFIED") else "unsupported",
-                  "decision": d.final_status, "atom_type": d.atom_type, "stratum": d.stratum}
-                 for d in ad.atom_decisions]
+    atom_rows = []
+    for idx, d in enumerate(ad.atom_decisions):
+        row = {
+            "risk": d.risk,
+            "label": "supported" if d.final_status in ("SUPPORTED", "VERIFIED") else "unsupported",
+            "decision": d.final_status,
+            "atom_type": d.atom_type,
+            "stratum": d.stratum,
+            "atom_id": getattr(s_atoms[idx].atom, "atom_id", f"a{idx}") if idx < len(s_atoms) and hasattr(s_atoms[idx], "atom") else f"a{idx}",
+            "text": getattr(s_atoms[idx].atom, "text", "") if idx < len(s_atoms) and hasattr(s_atoms[idx], "atom") else "",
+            "cited_chunk_id": getattr(s_atoms[idx].atom, "cited_chunk_id", "") if idx < len(s_atoms) and hasattr(s_atoms[idx], "atom") else "",
+        }
+        if idx < len(s_atoms) and hasattr(s_atoms[idx], "metadata") and "signals" in s_atoms[idx].metadata:
+            row.update(s_atoms[idx].metadata["signals"])
+        atom_rows.append(row)
 
     return {
         "question": question, "query_date": query_date,
@@ -150,7 +189,7 @@ def run_one_query(question, query_date, retriever, generator, thresholds, judge,
         "n_atoms": len(ad.atom_decisions), "n_supported": ad.n_supported,
         "n_verified": ad.n_verified, "n_uncertain": ad.n_uncertain,
         "n_abstained": ad.n_abstained, "n_not_verified": ad.n_not_verified,
-        "judge_calls": ad.judge_calls, "latency": lat,
+        "judge_calls": ad.judge_calls, "parse_errors": getattr(ad, 'parse_errors', 0), "latency": lat,
         "atoms": atom_rows,  # kept -- callers must pop themselves
         "sources": [{"chunk_id": c.chunk_id, "regulator": c.regulator,
                      "section": str((c.metadata or {}).get("section",""))} for c in rr.chunks[:6]],
@@ -159,21 +198,31 @@ def run_one_query(question, query_date, retriever, generator, thresholds, judge,
 
 def run_m7_ltt(all_atoms, strict: bool = True):
     import numpy as np
-    from common.errors import StrictFailure
+    from common.errors import StrictFailure, print_not_paper_valid_banner
     from guarantee.ltt import certify_lambda, simulate_violation_rate
     logger.info("M7: LTT on %d atoms...", len(all_atoms))
     if not all_atoms:
+        msg = "No atoms to certify. Refusing to simulate a calibration pool."
         if strict:
-            raise StrictFailure("No atoms to certify. Refusing to simulate a calibration pool.")
+            raise StrictFailure(msg)
+        print_not_paper_valid_banner(msg)
         return {"threshold": None, "status": "not_certifiable", "simulate": {}, "n_atoms": 0}
     risk_arr  = np.array([a["risk"] for a in all_atoms])
     wrong_arr = np.array([0.0 if a["label"]=="supported" else 1.0 for a in all_atoms])
     cert = certify_lambda(risk_arr, wrong_arr, eps=0.05, delta=0.10, use_hb=False)
     sim = simulate_violation_rate(risk_arr, wrong_arr, eps=0.05, delta=0.10, n_splits=500, seed=42, use_hb=False)
-    if strict and not cert.valid:
-        raise StrictFailure(f"LTT status={cert.status}: {cert.reason}")
-    if strict and not sim.get("valid"):
-        raise StrictFailure("LTT held-out check has zero valid coverage.")
+    n_acc = int((risk_arr <= cert.threshold).sum()) if cert.threshold is not None else 0
+    if cert.threshold is None or n_acc == 0 or not cert.valid:
+        msg = f"Stratum '*|*' failed M7 certification: threshold={cert.threshold} accepts {n_acc} atoms (status={cert.status})."
+        print(msg)
+        if strict:
+            raise StrictFailure(msg)
+        print_not_paper_valid_banner(msg)
+    if not sim.get("valid"):
+        msg = "LTT held-out check has zero valid coverage."
+        if strict:
+            raise StrictFailure(msg)
+        print_not_paper_valid_banner(msg)
     logger.info(
         "  LTT status=%s threshold=%s coverage=%.3f",
         cert.status, cert.threshold, cert.coverage,
@@ -230,6 +279,14 @@ def print_final_report(qr, m7, m10, all_atoms):
     print(f"  Generated : {date.today().isoformat()}")
     print(f"  Dataset   : pre-ingested RBI/SEBI PDFs (42,986 chunks)")
     print(f"  Atoms     : {len(all_atoms)} real atoms collected from pipeline")
+    
+    total_judge_calls = sum(r.get('judge_calls', 0) for r in qr)
+    total_parse_errors = sum(r.get('parse_errors', 0) for r in qr)
+    total_atoms = len(all_atoms)
+    judge_call_rate = total_judge_calls / total_atoms if total_atoms else 0
+    parse_error_rate = total_parse_errors / total_judge_calls if total_judge_calls else 0
+    print(f"  Judge calls : {total_judge_calls}/{total_atoms} ({judge_call_rate:.1%})")
+    print(f"  Parse errors: {total_parse_errors}/{total_judge_calls} ({parse_error_rate:.1%})")
     print(SEP)
 
     # Per-query table
@@ -252,12 +309,12 @@ def print_final_report(qr, m7, m10, all_atoms):
         print(f"  Hallucination rate   : {hr:.4f}   (target <= {s.get('eps',0.05):.2f})")
     else:
         print(f"  Hallucination rate   : N/A  (no accepted atoms -- all abstained or 0 atoms)")
-    print(f"  Coverage (answered)  : {s.get('coverage',0):.4f}")
-    print(f"  AURC                 : {s.get('aurc',0):.4f}  (lower = better; 0=perfect)")
-    vr = s.get("violation_rate",1.0); ok = s.get("violation_rate_ok",False)
+    print(f"  Coverage (answered)  : {(s.get('coverage') or 0):.4f}")
+    print(f"  AURC                 : {(s.get('aurc') or 0):.4f}  (lower = better; 0=perfect)")
+    vr = s.get("violation_rate") or 1.0; ok = s.get("violation_rate_ok", False)
     print(f"  Violation rate       : {vr:.4f}   {'PASSES' if ok else 'FAILS'} (delta=0.10)")
-    print(f"  Retrieval Recall@6   : {s.get('retrieval_recall_at_6',0):.4f}")
-    print(f"  Retrieval MRR        : {s.get('retrieval_mrr',0):.4f}")
+    print(f"  Retrieval Recall@6   : {(s.get('retrieval_recall_at_6') or 0):.4f}")
+    print(f"  Retrieval MRR        : {(s.get('retrieval_mrr') or 0):.4f}")
 
     # M7 Guarantee
     thr = m7.get("threshold"); sim = m7.get("simulate",{})
@@ -267,42 +324,53 @@ def print_final_report(qr, m7, m10, all_atoms):
     print(f"  Simulated viol rate  : {sim.get('violation_rate',0):.4f}  (target <= 0.10)")
     print(f"  Statistical bound    : {'HOLDS' if sim.get('violation_rate',1)<0.10 else 'VIOLATED'}  (delta=0.10)")
 
-    # Ablation
-    abl = m10.get("ablation_table",[])
-    if abl:
+    # Ablation — handle both list-of-dicts and the dict-keyed format
+    abl_raw = m10.get("ablation_table", [])
+    if isinstance(abl_raw, list):
+        abl_rows = abl_raw
+    elif isinstance(abl_raw, dict):
+        # Collect any value that is a row-dict (has 'condition' or 'aurc')
+        abl_rows = [v for v in abl_raw.values() if isinstance(v, dict) and ("condition" in v or "aurc" in v)]
+    else:
+        abl_rows = []
+    if abl_rows:
         print(f"\n{DIV}")
         print("ABLATION TABLE  (AURC lower = better, Cov higher = better):")
         print(f"  {'Condition':<44} {'AURC':>7} {'Hall':>7} {'Cov':>7}")
-        for row in abl:
-            print(f"  {row['condition']:<44} {row['aurc']:>7.4f} {row.get('hallucination_rate',0):>7.4f} {row['coverage']:>7.4f}")
+        for row in abl_rows:
+            print(f"  {row.get('condition','?'):<44} {(row.get('aurc') or 0):>7.4f} {(row.get('hallucination_rate') or 0):>7.4f} {(row.get('coverage') or 0):>7.4f}")
 
     # Retrieval
     ret = m10.get("retrieval_metrics",{})
     if ret:
         print(f"\n{DIV}")
         print("RETRIEVAL METRICS (M2):")
-        print(f"  Recall@6     = {ret.get('recall_at_6',0):.4f}")
-        print(f"  Recall@10    = {ret.get('recall_at_10',0):.4f}")
-        print(f"  MRR          = {ret.get('mrr',0):.4f}")
-        print(f"  Precision@6  = {ret.get('precision_at_6',0):.4f}")
+        print(f"  Recall@6     = {(ret.get('recall_at_6') or 0):.4f}")
+        print(f"  Recall@10    = {(ret.get('recall_at_10') or 0):.4f}")
+        print(f"  MRR          = {(ret.get('mrr') or 0):.4f}")
+        print(f"  Precision@6  = {(ret.get('precision_at_6') or 0):.4f}")
 
     # Extraction
     ext = m10.get("extraction_metrics",{})
-    if ext:
+    if ext and isinstance(ext, dict):
         print(f"\n{DIV}")
         print("EXTRACTION METRICS (M4):")
         print(f"  {'Type':<16} {'Recall':>8} {'Precision':>10} {'F1':>8}")
-        for t,v in ext.items():
-            print(f"  {t:<16} {v.get('recall',0):>8.4f} {v.get('precision',0):>10.4f} {v.get('f1',0):>8.4f}")
+        for t, v in ext.items():
+            if not isinstance(v, dict):
+                continue
+            print(f"  {t:<16} {(v.get('recall') or 0):>8.4f} {(v.get('precision') or 0):>10.4f} {(v.get('f1') or 0):>8.4f}")
 
     # Drift
     dr = m10.get("drift_table",{})
-    if dr and dr.get("strategies"):
+    if dr and isinstance(dr, dict) and dr.get("strategies"):
         print(f"\n{DIV}")
         print(f"DRIFT EXPERIMENT (M7, cutoff={dr.get('cutoff_date','?')}, n_pre={dr.get('n_pre')}, n_post={dr.get('n_post')}):")
         print(f"  {'Strategy':<24} {'Viol Rate':>10} {'Threshold':>10} {'Coverage':>10}")
-        for st in dr.get("strategies",[]):
-            print(f"  {st.get('strategy','?'):<24} {st.get('violation_rate',0):>10.4f} {st.get('threshold',0):>10.4f} {st.get('coverage',0):>10.4f}")
+        for st in dr.get("strategies", []):
+            if not isinstance(st, dict):
+                continue
+            print(f"  {st.get('strategy','?'):<24} {(st.get('violation_rate') or 0):>10.4f} {(st.get('threshold') or 0):>10.4f} {(st.get('coverage') or 0):>10.4f}")
         print(f"  Best strategy: {dr.get('best_strategy','?')}")
 
     # Atom risk distribution
@@ -335,12 +403,12 @@ def print_final_report(qr, m7, m10, all_atoms):
 def main():
     import argparse
     from common.checkpoint import append_jsonl
-    from common.errors import StrictFailure
-    from common.experiment import load_experiment, provenance
+    from common.errors import StrictFailure, print_not_paper_valid_banner
+    from common.experiment import load_experiment, provenance, strict_default
     from common.rate_limit import configure_bucket
 
     parser = argparse.ArgumentParser(description="RegGuard end-to-end evaluation")
-    parser.add_argument("--strict", action=argparse.BooleanOptionalAction, default=True)
+    parser.add_argument("--strict", action=argparse.BooleanOptionalAction, default=strict_default())
     parser.add_argument("--questions", default=None, help="JSONL with question, query_date, family")
     args = parser.parse_args()
 
@@ -348,6 +416,17 @@ def main():
     rate = exp.get("rate_limit") or {}
     configure_bucket(float(rate.get("requests_per_second", 0.0)), float(rate.get("capacity", 1)))
     stamp = provenance()
+
+    paper_valid = True
+
+    # Check Condition 1: Missing aggregator
+    agg_path = ROOT / "models" / "aggregator" / "aggregator_v1.pkl"
+    if not agg_path.exists():
+        msg = "models/aggregator/aggregator_v1.pkl is missing (no weighted-average fallback)."
+        if args.strict:
+            raise StrictFailure(msg)
+        print_not_paper_valid_banner(msg)
+        paper_valid = False
 
     questions = QUERIES
     if args.questions:
@@ -368,8 +447,8 @@ def main():
 
     # Build module singletons
     retriever = build_retriever()
-    generator = build_generator()
-    judge     = build_judge()
+    generator = build_generator(exp)
+    judge     = build_judge(exp)
 
     # M7 Thresholds -- load or use calibrated defaults
     thresholds = {}
@@ -378,59 +457,142 @@ def main():
         from guarantee.certify import load_thresholds
         thresholds = load_thresholds(str(tp))
         logger.info("M7: Thresholds loaded from %s", tp)
+        for s_name, th in thresholds.items():
+            n_acc = th.metadata.get("n_accepted") if hasattr(th, "metadata") and th.metadata else None
+            if th.accept_below is None or (n_acc is not None and n_acc == 0):
+                msg = f"Stratum '{s_name}' failed M7 certification: threshold={th.accept_below} accepts {n_acc} atoms."
+                print(msg)
+                has_errors = True
+                print_not_paper_valid_banner(msg)
+                paper_valid = False
     else:
+        msg = "Stratum '*|*' failed M7 certification: fell back to heuristic thresholds (accept<0.35, abstain>0.70)."
+        print(msg)
         if args.strict:
-            raise StrictFailure(
-                "No certified thresholds at models/guarantee/thresholds.json. "
-                "Refusing heuristic accept<0.35 / abstain>0.70."
-            )
+            raise StrictFailure(msg)
+        print_not_paper_valid_banner(msg)
+        paper_valid = False
         thresholds = _make_default_thresholds()
-        logger.warning("Non-strict run is using heuristic thresholds.")
 
     all_atoms, query_results = [], []
 
-    checkpoint = ROOT / "results" / "checkpoints" / "queries.jsonl"
+    checkpoint = ROOT / "results" / "queries.jsonl"
+    completed_queries = set()
+    if checkpoint.exists():
+        with open(checkpoint, "r", encoding="utf-8") as f:
+            for line in f:
+                if line.strip():
+                    try:
+                        data = json.loads(line)
+                        if data.get("status") in ("OK", "ERROR"):
+                            completed_queries.add(data.get("question"))
+                    except:
+                        pass
+    has_errors = False
     for i, q in enumerate(questions, 1):
         logger.info("="*50)
         logger.info("QUERY %d/%d  [%s]: %s", i, len(questions), q.get("family", "").upper(), q["question"][:70])
         logger.info("="*50)
 
+        if q["question"] in completed_queries:
+            logger.info("Skipping completed query: %s", q["question"][:70])
+            continue
+
         atom_rows = []
-        try:
-            r = run_one_query(q["question"], q["query_date"], retriever, generator, thresholds, judge, strict=args.strict)
-            r["family"] = q.get("family", "")
-            atom_rows = r.pop("atoms")   # pop atoms for all_atoms, keep separately for printing
-            all_atoms.extend(atom_rows)
-            query_results.append(r)
-            append_jsonl(checkpoint, {"question": q["question"], "status": "OK", "n_atoms": r["n_atoms"], **stamp})
-            print_query_result(i, len(questions), q, r, atom_rows)
-        except Exception as exc:
-            append_jsonl(checkpoint, {"question": q["question"], "status": "ERROR", "error": str(exc), **stamp})
-            if args.strict:
-                raise StrictFailure(f"Query {i} ended in ERROR: {exc}") from exc
-            logger.error("Query %d ERROR: %s", i, exc, exc_info=True)
-            query_results.append({
-                "question": q["question"], "family": q["family"],
-                "answer_status": "ERROR", "coverage": 0.0, "n_atoms": 0,
-                "n_supported": 0, "n_verified": 0, "n_uncertain": 0,
-                "n_abstained": 0, "n_not_verified": 0, "judge_calls": 0,
-                "latency": {}, "answer": "", "sources": [], "error": str(exc),
-            })
-            # Still print the error row
-            print(f"\n{'='*72}")
-            print(f"  QUERY {i}/{len(questions)}  [{q.get('family','').upper()}]  -- ERROR")
-            print(f"  {str(exc)[:200]}")
+        max_retries = exp.get("query_retries", 1)
+        for attempt in range(max_retries + 1):
+            try:
+                r = run_one_query(q["question"], q["query_date"], retriever, generator, thresholds, judge, exp, strict=args.strict)
+                r["family"] = q.get("family", "")
+                atom_rows = r.pop("atoms")   # pop atoms for all_atoms, keep separately for printing
+                all_atoms.extend(atom_rows)
+                query_results.append(r)
+                append_jsonl(checkpoint, {"question": q["question"], "status": "OK", "n_atoms": r["n_atoms"], **stamp})
+                print_query_result(i, len(questions), q, r, atom_rows)
+                if r.get("answer_status") == "ERROR":
+                    msg = f"Query {i} ended with status ERROR."
+                    has_errors = True
+                    print_not_paper_valid_banner(msg)
+                    paper_valid = False
+                break  # Success!
+            except Exception as exc:
+                if attempt < max_retries:
+                    logger.warning("Query %d failed (attempt %d/%d). Retrying... Error: %s", i, attempt+1, max_retries, exc)
+                    import time
+                    time.sleep(2)
+                    continue
+                
+                append_jsonl(checkpoint, {"question": q["question"], "status": "ERROR", "error": str(exc), **stamp})
+                msg = f"Query {i} ended with status ERROR after {max_retries} retries: {exc}"
+                has_errors = True
+                print_not_paper_valid_banner(msg)
+                paper_valid = False
+                logger.error("Query %d ERROR: %s", i, exc, exc_info=True)
+                query_results.append({
+                    "question": q["question"], "family": q["family"],
+                    "answer_status": "ERROR", "coverage": 0.0, "n_atoms": 0,
+                    "n_supported": 0, "n_verified": 0, "n_uncertain": 0,
+                    "n_abstained": 0, "n_not_verified": 0, "judge_calls": 0,
+                    "parse_errors": 0,
+                    "latency": {}, "answer": "", "sources": [], "error": str(exc),
+                })
+                # Still print the error row
+                print(f"\n{'='*72}")
+                print(f"  QUERY {i}/{len(questions)}  [{q.get('family','').upper()}]  -- ERROR")
+                print(f"  {str(exc)[:200]}")
+                break
 
     logger.info("Atoms collected: %d from %d queries", len(all_atoms), len(questions))
+    if args.strict and has_errors:
+        raise StrictFailure("Run completed with errors in strict mode.")
+
+    # Condition 2: Validate signals across all atoms
+    if len(all_atoms) >= 2:
+        from signals import validate_signals
+        if not validate_signals(all_atoms, strict=args.strict):
+            paper_valid = False
 
     # M7: LTT
     m7 = run_m7_ltt(all_atoms, strict=args.strict)
+    if m7.get("threshold") is None or m7.get("status") == "not_certifiable":
+        paper_valid = False
 
     # M10: Full eval suite
     m10 = run_m10(all_atoms, strict=args.strict)
 
     # Print final report
     print_final_report(query_results, m7, m10, all_atoms)
+
+    # Re-write summary.json to ensure paper_valid is properly stamped
+    summary_path = ROOT / "results" / "summary.json"
+    s_data = {}
+    if summary_path.exists():
+        try:
+            with open(summary_path, "r", encoding="utf-8") as f:
+                s_data = json.load(f)
+        except Exception:
+            s_data = {}
+    s_data["paper_valid"] = bool(paper_valid and s_data.get("paper_valid", True))
+    
+    from atoms.extractor import get_atom_splitter
+    splitter = get_atom_splitter()
+    if splitter:
+        s_data["parse_failures"] = splitter.llm_extractor.parse_failures
+    else:
+        s_data["parse_failures"] = 0
+
+    summary_path.parent.mkdir(parents=True, exist_ok=True)
+    with open(summary_path, "w", encoding="utf-8") as f:
+        json.dump(s_data, f, indent=2)
+
+    if not paper_valid:
+        print_not_paper_valid_banner("Run completed but is NOT PAPER-VALID.")
+
+    total_jc = sum(r.get('judge_calls', 0) for r in query_results)
+    total_pe = sum(r.get('parse_errors', 0) for r in query_results)
+    jc_rate = total_jc / len(all_atoms) if all_atoms else 0
+    pe_rate = total_pe / total_jc if total_jc else 0
+    logger.info("Judge call rate: %.2f%%, Parse error rate: %.2f%%", jc_rate*100, pe_rate*100)
 
     # Save pipeline report
     rd = ROOT/"results"; rp = rd/"pipeline_report.json"
@@ -446,6 +608,8 @@ def main():
                 "n_atoms": m7.get("n_atoms"),
             },
             "m10_summary": m10.get("summary",{}),
+            "judge_call_rate": jc_rate,
+            "parse_error_rate": pe_rate,
             "ablation_table": m10.get("ablation_table",[]),
             "retrieval_metrics": m10.get("retrieval_metrics",{}),
             "extraction_metrics": m10.get("extraction_metrics",{}),

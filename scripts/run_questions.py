@@ -46,9 +46,9 @@ def atom_record(question: dict, atom, signals: dict, source_text: str) -> dict:
         "label": None,
         "signals": signals,
         **{k: signals.get(k) for k in (
-            "s_div", "s_ret", "s_ver", "s_nli", "s_ent", "s_mech",
+            "s_div", "s_ret", "s_ver", "s_nli", "s_ent",
             "s_div_skipped", "s_ret_skipped", "nli_skipped",
-            "s_ent_skipped", "s_mech_skipped",
+            "s_ent_skipped",
         )},
         "parse_failures": question.get("parse_failures", 0),
     }

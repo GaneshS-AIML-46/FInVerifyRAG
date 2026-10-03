@@ -5,7 +5,7 @@
   "full_regguard": {
     "condition": "Full RegGuard (all components)",
     "hallucination_rate": 0.0,
-    "coverage": 0.5,
-    "aurc": 0.22669
+    "coverage": 0.580645,
+    "aurc": 0.152393
   }
 }

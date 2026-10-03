@@ -276,7 +276,7 @@ def train_from_jsonl(
         for r in labeled
     ])
     X = frame.reindex(columns=FEATURE_COLS).to_numpy(dtype=float)
-    imputer = SimpleImputer(strategy="constant", fill_value=0.0)
+    imputer = SimpleImputer(strategy="constant", fill_value=0.0, keep_empty_features=True)
     X = imputer.fit_transform(X)
 
     if model == "gbm":
@@ -349,6 +349,18 @@ def train_from_jsonl(
     (out / "metrics.json").write_text(json.dumps(metrics, indent=2), encoding="utf-8")
     (out / "features.json").write_text(json.dumps(FEATURE_COLS, indent=2), encoding="utf-8")
     logger.info("Saved %s  AUROC=%s  Brier=%s", model_path, metrics["auroc_mean"], metrics["brier_mean"])
+    # Print feature importance
+    if kind == "gbm":
+        importances = final.feature_importances_
+    else:
+        importances = np.abs(final.coef_[0])
+        
+    feat_imps = sorted(zip(FEATURE_COLS, importances), key=lambda x: x[1], reverse=True)
+    logger.info("--- Feature Importance ---")
+    for fname, fval in feat_imps:
+        if fval > 0:
+            logger.info("  %s: %.4f", fname, fval)
+
     return metrics
 
 

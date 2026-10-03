@@ -17,7 +17,7 @@ const STAGES = [
   { num: 10, name: 'Final Output',            desc: 'User-facing verified answer' },
 ];
 
-const SIGNAL_KEYS = ['s_div','s_ret','s_ver','s_nli','s_ent','s_mech'] as const;
+const SIGNAL_KEYS = ['s_div','s_ret','s_ver','s_nli','s_ent'] as const;
 
 function StageCard({ stage, result, expanded, onToggle }: {
   stage: typeof STAGES[0]; result: typeof DEMO_RESULT;

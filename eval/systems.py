@@ -35,7 +35,7 @@ def risk_vector(records: Sequence[dict], system: str) -> Optional[List[float]]:
         return col("s_ver")
     if system == "conformal_no_mondrian":
         # Global score: unweighted mean of the raw signals, not the aggregator.
-        needed = ("s_ver", "s_nli", "s_ent", "s_ret", "s_div", "s_mech")
+        needed = ("s_ver", "s_nli", "s_ent", "s_ret", "s_div")
         if not records or any(name not in records[0] for name in needed):
             return None
         out = []

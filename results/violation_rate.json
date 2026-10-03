@@ -1,7 +1,7 @@
 {
   "violation_rate": 0.0,
   "n_violations": 0,
-  "n_splits": 1000,
+  "n_splits": 500,
   "mean_selective_risk": 0.0,
   "max_selective_risk": 0.0,
   "eps": 0.05,

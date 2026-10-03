@@ -302,7 +302,6 @@ def cascade(atom, rr):
 | `s_ver` verification result | `s_ver.py` | V1 encoding: MATCH=0, NOT_FOUND=0.5, MISMATCH=1, NA=0.5 (or one-hot) |
 | `s_nli` entailment | `s_nli.py` | `1 - p(entail)` from V2 (0.5 if skipped, plus a `nli_skipped` flag feature) |
 | `s_ent` model uncertainty | `s_ent.py` | Mean and max token entropy (or negative logprob) over the atom's token span |
-| `s_mech` mechanistic signal | `s_mech.py` | Attention/internal-state feature in the style of ReDeEP/lookback ratio: how much the atom's tokens attend to the evidence vs. to generated text. Requires running Qwen with `output_attentions` on the (prompt, answer) pair |
 
 ### Aggregator (`aggregate/`)
 - `dataset.py`: builds a feature table (one row per atom: signals, atom type, regulator, label `wrong = 1`).
@@ -312,7 +311,6 @@ def cascade(atom, rr):
 
 **Tasks**
 - [ ] Implement each signal as a pure function with tests.
-- [ ] Cache expensive signals (`s_mech`) to disk.
 - [ ] Build the feature table on the `agg_train` split.
 - [ ] Train LogReg, then LightGBM; compare AUROC/AUPRC per atom type.
 - [ ] Signal ablation (drop one signal at a time) and save the table for the paper.
@@ -320,7 +318,7 @@ def cascade(atom, rr):
 
 **Key code**
 ```python
-X = feat_df[["s_div","s_ret","s_ver","s_nli","s_ent","s_mech","nli_skipped"] + type_onehot]
+X = feat_df[["s_div","s_ret","s_ver","s_nli","s_ent","nli_skipped"] + type_onehot]
 clf = LGBMClassifier(n_estimators=300, learning_rate=0.05, max_depth=4)
 clf.fit(X_train, y_train)          # y = 1 if atom is wrong/unsupported/outdated
 risk = IsotonicRegression(out_of_bounds="clip").fit(clf.predict_proba(X_val)[:,1], y_val)
@@ -328,7 +326,7 @@ risk = IsotonicRegression(out_of_bounds="clip").fit(clf.predict_proba(X_val)[:,1
 
 **Done when:** AUROC above 0.85 for wrong-atom detection on a held-out split, ablation table produced.
 
-**Pitfalls:** **the aggregator must not see calibration or test data**; NLI outputs on its training data must come from a model that did not train on those pairs (or use cross-fitting); define `s_mech` precisely for the paper.
+**Pitfalls:** **the aggregator must not see calibration or test data**; NLI outputs on its training data must come from a model that did not train on those pairs (or use cross-fitting).
 
 ---
 

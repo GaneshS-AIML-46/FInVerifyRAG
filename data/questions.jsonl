@@ -1,0 +1,5 @@
+{"id": "q1", "question": "What is the penalty for non-compliance with SEBI Insider Trading regulations?", "query_date": "2024-01-01", "regulator": "SEBI", "family": "entity"}
+{"id": "q2", "question": "What is the minimum Capital Adequacy Ratio required for scheduled commercial banks under RBI guidelines?", "query_date": "2024-01-01", "regulator": "RBI", "family": "rate"}
+{"id": "q3", "question": "When does the new SEBI guideline on margin requirements take effect?", "query_date": "2024-06-01", "regulator": "SEBI", "family": "date"}
+{"id": "q4", "question": "What is the maximum exposure limit for a single counterparty for NBFCs?", "query_date": "2023-01-01", "regulator": "RBI", "family": "threshold"}
+{"id": "q5", "question": "Which section covers the penalty for late submission of RBI returns?", "query_date": "2024-01-01", "regulator": "RBI", "family": "section"}

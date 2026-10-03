@@ -98,12 +98,11 @@ def _load_calibrator(cal_path: Optional[str] = None) -> Optional[object]:
 # -----------------------------------------------------------------------
 
 _FALLBACK_WEIGHTS = {
-    "s_ver":   0.30,
-    "s_nli":   0.25,
+    "s_ver":   0.35,
+    "s_nli":   0.30,
     "s_ent":   0.15,
     "s_ret":   0.10,   # inverted: high s_ret → low risk
     "s_div":   0.10,   # inverted: high s_div → low risk
-    "s_mech":  0.10,
 }
 
 
@@ -167,7 +166,6 @@ def score(
     rr: RetrievalResult,
     model_path: Optional[str] = None,
     calibrator_path: Optional[str] = None,
-    use_mech_cache: bool = True,
     strict: bool = False,
 ) -> List[ScoredAtom]:
     """
@@ -180,7 +178,6 @@ def score(
     rr               : RetrievalResult with rerank_scores in metadata.
     model_path       : Override path to aggregator_v1.pkl.
     calibrator_path  : Override path to calibrator_v1.pkl.
-    use_mech_cache   : Whether to use disk cache for expensive s_mech signal.
 
     Returns
     -------
@@ -191,10 +188,14 @@ def score(
     if isinstance(model, dict) and "model" in model:
         feature_order = model.get("feature_order")
         model = model["model"]
-    if model is None and strict:
-        raise StrictFailure(
-            "Aggregator model is missing. Refusing to emit a risk. "
-            "Train on labeled data with: python -m aggregate.train"
+    if model is None:
+        if strict:
+            raise StrictFailure(
+                "models/aggregator/aggregator_v1.pkl is missing (no weighted-average fallback)."
+            )
+        from common.errors import print_not_paper_valid_banner
+        print_not_paper_valid_banner(
+            "models/aggregator/aggregator_v1.pkl is missing (falling back to weighted average)."
         )
     calibrator = _load_calibrator(calibrator_path)
 
@@ -203,11 +204,7 @@ def score(
     # Build feature matrix for batch prediction (if model available)
     all_feats = []
     for va in verified_atoms:
-        feats = compute_all_signals(
-            va, answer, rr, use_mech_cache=use_mech_cache, strict=strict,
-        )
-        if strict and feats.get("s_mech_error"):
-            raise StrictFailure(f"s_mech failed to load: {feats['s_mech_error']}")
+        feats = compute_all_signals(va, answer, rr, strict=strict)
 
         # Add atom-type one-hot
         atom_type = va.atom.type
@@ -224,6 +221,9 @@ def score(
             feats[f"reg_{r}"] = int(reg == r)
 
         all_feats.append(feats)
+
+    from signals import validate_signals
+    validate_signals(all_feats, strict=strict)
 
     if model is not None:
         import numpy as np

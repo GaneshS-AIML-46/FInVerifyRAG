@@ -206,21 +206,12 @@ class JudgeLLM:
         max_retries:         int           = 1,
         max_calls_per_query: int           = 20,
         guarantee_mode:      str           = "empirical",
+        config:              Optional[dict] = None,
     ) -> None:
         if llm_client is None:
             from common.llm_client import LLMClient
-            # Read judge-specific credentials from environment (.env or shell)
-            api_key  = os.getenv("JUDGE_API_KEY", "ollama")
-            base_url = os.getenv(
-                "JUDGE_BASE_URL",
-                "http://localhost:11434/v1" if api_key == "ollama" else "https://api.openai.com/v1",
-            )
-            model    = os.getenv("JUDGE_MODEL", "openai/gpt-oss-120b")
-            llm_client = LLMClient(base_url=base_url, api_key=api_key, default_model=model)
-            logger.info(
-                "JudgeLLM initialised — base_url=%s  model=%s  api_key=%s",
-                base_url, model, "***" + api_key[-6:] if len(api_key) > 6 else "***",
-            )
+            llm_client = LLMClient(config=config)
+
         self.llm                  = llm_client
         self.max_retries          = max_retries
         self.max_calls_per_query  = max_calls_per_query
