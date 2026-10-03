@@ -72,10 +72,18 @@ def _load_model(model_path: Optional[str] = None) -> Optional[object]:
         )
         return None
 
-    with open(p, "rb") as f:
-        _model = pickle.load(f)
-    logger.info("Loaded aggregator model from %s", p)
-    return _model
+    try:
+        with open(p, "rb") as f:
+            _model = pickle.load(f)
+        logger.info("Loaded aggregator model from %s", p)
+        return _model
+    except Exception as exc:
+        logger.error(
+            "Aggregator model at %s is corrupt and cannot be loaded (%s). "
+            "Treat as missing. Re-train with: python -m aggregate.train",
+            p, exc,
+        )
+        return None
 
 
 def _load_calibrator(cal_path: Optional[str] = None) -> Optional[object]:

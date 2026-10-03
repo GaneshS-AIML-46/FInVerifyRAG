@@ -1,0 +1,15 @@
+{
+  "*|*": {
+    "stratum_name": "*|*",
+    "accept_below": null,
+    "abstain_above": 0.7,
+    "metadata": {
+      "n_accepted": 0,
+      "n_calib": 0,
+      "status": "not_certifiable",
+      "strategy": "static",
+      "note": "placeholder - run guarantee.certify after training aggregator and labeling calibration data"
+    },
+    "schema_version": "1.1"
+  }
+}

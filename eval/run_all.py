@@ -184,9 +184,36 @@ def run_all(
         paper_valid = False
 
     simulated = False
-    from common.validation import load_and_validate_data
+
     def _load_jsonl(path: str) -> list:
-        return load_and_validate_data(path, strict)
+        """
+        Load a JSONL file for evaluation.
+
+        Checks for results_mock, s_mech keys, and synthetic flag.
+        Does NOT check annotator_id — annotator validation belongs at label-ingestion
+        time, not at evaluation time.  Signal validation is done separately after
+        loading so that it fires before any other strict check.
+        """
+        p = Path(path)
+        if "results_mock" in p.parts:
+            raise StrictFailure("results_mock/ is unreadable from the results pipeline.")
+        rows = []
+        with open(path, "r", encoding="utf-8") as fh:
+            for line in fh:
+                line = line.strip()
+                if not line:
+                    continue
+                row = json.loads(line)
+                if "s_mech" in row:
+                    raise StrictFailure(
+                        f"Row contains forbidden key 's_mech' in {path}"
+                    )
+                if strict and row.get("synthetic"):
+                    raise StrictFailure(
+                        f"Synthetic data found in {path}. Use real validation data."
+                    )
+                rows.append(row)
+        return rows
 
     # ── Load or generate data ──────────────────────────────────────────────────
     if test_data and Path(test_data).exists():
@@ -259,13 +286,22 @@ def run_all(
     logger.info("Building main comparison table...")
     from eval.metrics import (
         hallucination_rate, coverage, aurc, risk_coverage_curve,
-        empirical_violation_rate, judge_call_rate,
+        judge_call_rate, clopper_pearson
     )
+    
+    n_accepted = sum(1 for d in decisions if d in ("SUPPORTED", "VERIFIED"))
+    n_wrong = sum(1 for l, d in zip(labels, decisions) if d in ("SUPPORTED", "VERIFIED") and l in ("unsupported", "outdated"))
+    
+    hr_ci = clopper_pearson(n_wrong, n_accepted) if n_accepted > 0 else (0.0, 1.0)
+    cov_ci = clopper_pearson(n_accepted, len(decisions)) if decisions else (0.0, 1.0)
+    
     rc_curve = risk_coverage_curve(risks, labels)
     main_metrics = {
         "regguard": {
             "hallucination_rate": hallucination_rate(labels, decisions),
+            "hallucination_rate_ci": hr_ci,
             "coverage":           coverage(decisions),
+            "coverage_ci":        cov_ci,
             "aurc":               aurc(rc_curve),
             "judge_call_rate":    judge_call_rate(decisions),
         }
@@ -274,7 +310,9 @@ def run_all(
     full_row = {
         "condition": "Full RegGuard (all components)",
         "hallucination_rate": main_metrics["regguard"]["hallucination_rate"],
+        "hallucination_rate_ci": hr_ci,
         "coverage": main_metrics["regguard"]["coverage"],
+        "coverage_ci": cov_ci,
         "aurc": main_metrics["regguard"]["aurc"],
     }
 
@@ -287,17 +325,8 @@ def run_all(
             main_table = _build_main_table(cal_rows, rows, eps)
             if strict and not main_table.get("aurc_distinct"):
                 raise StrictFailure("Per-system AURC values are not distinct.")
-            full = main_table.get("full_regguard") or {}
-            if full.get("hallucination_rate") is not None:
-                full_row = {
-                    "condition": "Full RegGuard (all components)",
-                    "hallucination_rate": full["hallucination_rate"],
-                    "coverage": full["coverage"],
-                    "aurc": full["aurc"],
-                }
         all_results["main_table"] = main_table
-        _write(out_dir / "main_table.json", main_table)
-        logger.info("main_table.json written.")
+        logger.info("main_table built.")
 
     # ── Ablation table ─────────────────────────────────────────────────────────
     logger.info("Building ablation table...")
@@ -311,27 +340,21 @@ def run_all(
     else:
         ablation = _build_ablation_table(train_rows, cal_rows, rows, full_row, seed)
     all_results["ablation_table"] = ablation
-    _write(out_dir / "ablation_table.json", ablation)
-    logger.info("ablation_table.json written.")
+    logger.info("ablation_table built.")
 
-    # ── Violation rate distribution ────────────────────────────────────────────
+    from guarantee.validate import validate_guarantee
     logger.info("Computing empirical violation rate (n_splits=%d)...", n_splits)
-    vr_result = empirical_violation_rate(
-        risks, labels, accept_threshold, eps,
-        n_splits=n_splits, seed=seed,
-    )
+    vr_result = validate_guarantee(cal_rows, eps, delta, n_splits=n_splits, seed=seed)
     all_results["violation_rate"] = vr_result
-    _write(out_dir / "violation_rate.json", vr_result)
     logger.info(
-        "violation_rate.json: violation_rate=%.4f (delta=%.2f) -> %s",
+        "violation_rate: %.4f (delta=%.2f) -> %s",
         vr_result["violation_rate"], delta,
         "✅ PASSES" if vr_result["violation_rate"] <= delta else "❌ FAILS",
     )
 
     # ── Risk-coverage curve ────────────────────────────────────────────────────
     all_results["rc_curve"] = {"points": rc_curve, "aurc": aurc(rc_curve)}
-    _write(out_dir / "rc_curve.json", all_results["rc_curve"])
-    logger.info("rc_curve.json written (AURC=%.4f).", aurc(rc_curve))
+    logger.info("rc_curve built (AURC=%.4f).", aurc(rc_curve))
 
     # ── Retrieval and extraction (gold files only; never simulated) ─────────
     from eval.gold import extraction_from_gold, retrieval_from_gold
@@ -351,21 +374,35 @@ def run_all(
         raise StrictFailure(ext_metrics.get("reason", "extraction gold missing"))
     all_results["retrieval_metrics"] = ret_metrics
     all_results["extraction_metrics"] = ext_metrics
-    _write(out_dir / "retrieval_metrics.json", ret_metrics)
-    _write(out_dir / "extraction_metrics.json", ext_metrics)
 
     # ── Latency from recorded query timings only ───────────────────────────────
     latencies = [r.get("latency") for r in rows if isinstance(r.get("latency"), dict)]
     if latencies:
         stages = set().union(*[d.keys() for d in latencies])
-        latency = {
-            stage: round(float(np.mean([d.get(stage, 0.0) for d in latencies])), 4)
-            for stage in sorted(stages)
-        }
+        latency = {}
+        for stage in sorted(stages):
+            vals = [d.get(stage, 0.0) for d in latencies if stage in d]
+            if vals:
+                latency[f"{stage}_mean"] = round(float(np.mean(vals)), 4)
+                latency[f"{stage}_p50"] = round(float(np.percentile(vals, 50)), 4)
+                latency[f"{stage}_p95"] = round(float(np.percentile(vals, 95)), 4)
     else:
         latency = _not_available("no recorded per-query latency")
     all_results["latency_breakdown"] = latency
-    _write(out_dir / "latency_breakdown.json", latency)
+
+    # ── Finalize all results and paper_valid ──────────────────────────────────
+    # Ensure full_regguard is identically referenced everywhere
+    if "main_table" in all_results and all_results["main_table"].get("status") != "not_available":
+        all_results["main_table"]["full_regguard"] = full_row
+    if "ablation_table" in all_results and all_results["ablation_table"].get("status") != "not_certifiable":
+        all_results["ablation_table"]["full_regguard"] = full_row
+
+    # paper_valid check for missing components
+    if paper_valid and not simulated:
+        for key in ["main_table", "ablation_table", "retrieval_metrics", "extraction_metrics", "latency_breakdown"]:
+            if all_results.get(key, {}).get("status") in ("not_available", "not_certifiable"):
+                paper_valid = False
+                break
 
     # ── Summary (one object; tables above are slices of it) ───────────────────
     summary = {
@@ -385,10 +422,25 @@ def run_all(
         "paper_valid":         paper_valid,
         "full_regguard":       full_row,
         "generated_on":        date.today().isoformat(),
-        **provenance(),
     }
     all_results["summary"] = summary
-    _write(out_dir / "summary.json", summary)
+    
+    metadata = {
+        **provenance(),
+        "seed": seed,
+        "paper_valid": paper_valid,
+        "splits": {
+            "test": len(rows),
+            "calib": len(cal_rows),
+            "train": len(train_rows),
+        }
+    }
+    
+    # Write all parts stamped with metadata
+    for key, val in all_results.items():
+        if isinstance(val, dict):
+            val.update(metadata)
+        _write(out_dir / f"{key}.json", val)
 
     logger.info("=" * 60)
     logger.info("RegGuard Evaluation Complete")
@@ -441,6 +493,15 @@ def run_seeds(
             if isinstance(val, (int, float)) and val == val:
                 vals.append(float(val))
         return vals
+        
+    # Read seeds from config if seeds is empty
+    if not seeds:
+        from common.experiment import load_experiment
+        cfg = load_experiment(None)
+        seeds = cfg.get("seeds", [42])
+        if not isinstance(seeds, list):
+            seeds = [seeds]
+            
     summary = {"seeds": seeds, "per_seed": [p["summary"] for p in per_seed], "intervals": {}}
     for key in ("hallucination_rate", "coverage", "aurc", "violation_rate"):
         vals = _col(key)
@@ -449,15 +510,36 @@ def run_seeds(
             continue
         mu = sum(vals) / len(vals)
         var = sum((v - mu) ** 2 for v in vals) / (len(vals) - 1)
-        half = 1.96 * math.sqrt(var / len(vals))
-        summary["intervals"][key] = {"mean": mu, "ci95": [mu - half, mu + half]}
+        std = math.sqrt(var)
+        half = 1.96 * std / math.sqrt(len(vals))
+        summary["intervals"][key] = {"mean": mu, "ci95": [mu - half, mu + half], "std": std}
     out = Path(results_dir)
     out.mkdir(parents=True, exist_ok=True)
+    
+    # Metadata for seeds_summary
+    from common.experiment import provenance
+    metadata = {**provenance(), "seeds": seeds}
+    summary.update(metadata)
+    
     _write(out / "seeds_summary.json", summary)
     from eval.latex_tables import write_latex
     write_latex(per_seed[-1], out / "tables.tex")
-    return summary
-
+def final_test_evaluation(test_jsonl: str, lock_path: str, is_final_run: bool, results_dir: str):
+    import hashlib
+    from common.errors import StrictFailure
+    if not is_final_run:
+        raise StrictFailure("final_test_evaluation can only be run with is_final_run=True.")
+    
+    with open(test_jsonl, "rb") as f:
+        actual_hash = hashlib.sha256(f.read()).hexdigest()
+        
+    with open(lock_path, "r", encoding="utf-8") as f:
+        expected_hash = f.read().strip()
+        
+    if actual_hash != expected_hash:
+        raise StrictFailure(f"Test split checksum mismatch! Expected {expected_hash}, got {actual_hash}")
+        
+    return run_all(results_dir=results_dir, test_data=test_jsonl, strict=True)
 
 def _cli():
     parser = argparse.ArgumentParser(

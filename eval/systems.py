@@ -100,14 +100,24 @@ def system_row(
         return {"system": name, "status": "not_available", "reason": "missing risk field"}
     labels = [r.get("label") for r in test_records]
     cal_labels = [r.get("label") for r in cal_records]
-    thr = tune_threshold(cal_risk, cal_labels, eps)
+    if name == "plain_rag":
+        thr = 1.0
+    else:
+        thr = tune_threshold(cal_risk, cal_labels, eps)
     decs = decisions_at(test_risk, thr)
     rc = risk_coverage_curve(list(test_risk), list(labels))
     judge_calls = 0
     if name == "llm_judge_all":
         judge_calls = len(test_records)
-    elif name == "RegGuard (ours)":
+    elif name in ("RegGuard (ours)", "regguard"):
         judge_calls = sum(int(r.get("judge_calls", 0) or (r.get("decision") == "UNCERTAIN")) for r in test_records)
+        
+    cost_per_100 = (judge_calls / max(len(test_records), 1)) * 100
+
+    from guarantee.validate import validate_guarantee
+    # Compute violation rate
+    vr_res = validate_guarantee(cal_records, eps, 0.10, n_splits=500, seed=42, system_name=name)
+    
     row = {
         "system": name,
         "status": "computed",
@@ -117,6 +127,8 @@ def system_row(
         "aurc": aurc(rc),
         "judge_call_rate": judge_calls / max(len(test_records), 1),
         "cost_judge_calls": judge_calls,
+        "cost_per_100_answers": cost_per_100,
+        "violation_rate": vr_res.get("violation_rate", 0.0),
         "rc_curve": rc,
     }
     for target in (0.40, 0.60, 0.80):
@@ -129,3 +141,4 @@ def system_row(
     else:
         row["valid"] = True
     return row
+

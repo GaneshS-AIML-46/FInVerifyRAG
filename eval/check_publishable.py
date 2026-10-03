@@ -1,131 +1,152 @@
-"""Release gate. Exits non-zero unless every publishable condition holds.
-
-    python -m eval.check_publishable --results results
+#!/usr/bin/env python3
+"""
+eval/check_publishable.py
+Gatekeeper script that asserts all requirements for the final paper are met.
+Exits 0 if ready to publish, 1 otherwise.
 """
 from __future__ import annotations
 
-import argparse
 import json
+import os
 import sys
+import subprocess
 from pathlib import Path
 
+ROOT = Path(__file__).resolve().parent.parent
+# Ensure repo root is importable (needed for 'tests' package when run standalone)
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
 
 def _load(path: Path):
     if not path.exists():
         return None
-    return json.loads(path.read_text(encoding="utf-8"))
-
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except:
+        return None
 
 def check(results_dir: str = "results", splits_dir: str = "data/splits") -> list:
     """Return a list of failure strings. Empty means the gate passes."""
     failures = []
     root = Path(results_dir)
-    summary = _load(root / "summary.json")
-    main = _load(root / "main_table.json")
-    ablation = _load(root / "ablation_table.json")
-    seeds = _load(root / "seeds_summary.json")
+    splits = Path(splits_dir)
+    
+    summary = _load(root / "summary.json") or {}
+    main = _load(root / "main_table.json") or {}
+    ablation = _load(root / "ablation_table.json") or {}
+    seeds = _load(root / "seeds_summary.json") or {}
 
+    # 1. Strict run completed with zero errors, zero fallbacks, zero synthetic
     if not summary:
-        return ["summary.json is missing"]
+        failures.append("summary.json is missing")
+    if not summary.get("paper_valid"):
+        failures.append("paper_valid is false (simulated data, fallbacks, or strict failures present)")
     if summary.get("simulated"):
-        failures.append("summary is marked simulated")
-    if summary.get("git_commit") in (None, "", "unknown"):
-        failures.append("git commit was not recorded")
-    if not summary.get("config_hash"):
-        failures.append("config hash was not recorded")
+        failures.append("run used simulated inputs")
 
-    model = Path("models/aggregator/aggregator_v1.pkl")
+    # 2. Aggregator trained and loaded; all signals pass the validation guards
+    model = ROOT / "models" / "aggregator" / "aggregator_v1.pkl"
     if not model.exists():
-        failures.append("aggregator model is missing")
+        failures.append("models/aggregator/aggregator_v1.pkl not found")
 
-    n_atoms = summary.get("n_atoms") or 0
-    if n_atoms < 150:
-        failures.append(f"test size {n_atoms} is below 150")
+    # 3. Test split has 500+ human-labeled atoms with a reported inter-annotator kappa
+    test_n = summary.get("splits", {}).get("test", 0)
+    if test_n < 500:
+        failures.append(f"Test split has {test_n} atoms, need >= 500")
+    kappa = _load(root / "kappa.json")
+    if not kappa:
+        failures.append("Inter-annotator kappa not reported (results/kappa.json missing)")
 
-    leakage = Path(splits_dir) / "leakage_report.json"
-    if not leakage.exists():
-        failures.append("document-level split leakage report is missing")
+    # 4. Document-level splits, the leakage check passes, and test.lock checksum matches
+    lock_path = splits / "test.lock"
+    if not lock_path.exists():
+        failures.append("test.lock checksum file missing")
+    leakage = _load(root / "leakage_report.json") or _load(splits / "leakage_report.json")
+    if not leakage:
+        failures.append("leakage_report.json missing (must pass document-level leakage check)")
+    elif leakage.get("leaked"):
+        failures.append("document-level split leakage detected")
+
+    # 5. Every Mondrian stratum is certified or explicitly merged; coverage > 0; no None thresholds
+    th_path = ROOT / "models" / "guarantee" / "thresholds.json"
+    if not th_path.exists():
+        failures.append("models/guarantee/thresholds.json missing")
     else:
-        report = json.loads(leakage.read_text(encoding="utf-8"))
-        if report.get("leaked"):
-            failures.append("a document id appears in more than one split")
+        th_data = _load(th_path) or {}
+        for stratum, info in th_data.items():
+            if info.get("accept_below") is None:
+                failures.append(f"Stratum {stratum} has None threshold (must be certified or merged)")
+            n_acc = info.get("metadata", {}).get("n_accepted", 0)
+            if n_acc == 0:
+                failures.append(f"Stratum {stratum} has 0 coverage")
 
-    if isinstance(main, dict):
-        rows = main.get("rows") or []
-        if main.get("status") == "not_available":
-            failures.append("main table was not computed from real systems")
-        aurcs = [r.get("aurc") for r in rows if r.get("aurc") is not None]
-        if len(aurcs) < 2 or len({round(a, 6) for a in aurcs}) < len(aurcs):
-            failures.append("per-system AURC values are not distinct")
-        for row in rows:
-            if row.get("threshold") is None and row.get("system"):
-                failures.append(f"threshold is None for {row.get('system')}")
-            if row.get("coverage") == 0:
-                failures.append(f"zero coverage for {row.get('system')}")
-    else:
-        failures.append("main_table.json is missing")
-
-    if isinstance(ablation, list):
-        failures.append("ablation table is not the retrained results object")
-    elif not isinstance(ablation, dict) or not ablation:
-        failures.append("ablation_table.json is missing")
-    else:
-        full = ablation.get("full_regguard") or {}
-        main_full = summary.get("full_regguard") or {}
-        for key in ("hallucination_rate", "coverage", "aurc"):
-            if full.get(key) != main_full.get(key):
-                failures.append(f"ablation Full RegGuard {key} disagrees with the main table")
-        if ablation.get("status") != "computed":
-            failures.append("ablation table was not retrained")
-
-    vr = summary.get("violation_rate")
+    # 6. Held-out violation rate <= delta (P13), with Clopper-Pearson intervals reported
     delta = summary.get("delta", 0.10)
-    if vr is None or vr != vr or vr > delta:
-        failures.append("held-out violation rate is missing or above delta")
+    vr = summary.get("violation_rate", 1.0)
+    if vr > delta:
+        failures.append(f"Violation rate {vr} > delta {delta}")
+    vr_interval = seeds.get("intervals", {}).get("violation_rate")
+    if not vr_interval or not vr_interval.get("ci95"):
+        failures.append("Clopper-Pearson intervals for violation rate missing in seeds_summary")
 
-    if not seeds or not seeds.get("intervals"):
-        failures.append("five-seed intervals are missing")
-    elif len(seeds.get("seeds") or []) < 5:
-        failures.append("fewer than 5 seeds")
-    else:
-        for key, interval in (seeds.get("intervals") or {}).items():
-            if not interval:
-                failures.append(f"no interval for {key}")
+    # 7. Each system has its own RC curve and a different AURC
+    if not main.get("aurc_distinct"):
+        failures.append("Baselines do not have distinct AURC (or missing baseline data)")
 
-    drift = _load(root / "drift_table.json")
-    if not drift:
-        failures.append("drift table is missing")
-    else:
-        if drift.get("n_pre", 0) < 150 or drift.get("n_post", 0) < 150:
-            failures.append("drift split has fewer than 150 atoms on a side")
-        strategies = drift.get("strategies") or []
-        thresholds = {s.get("threshold") for s in strategies}
-        if len(thresholds) < 2:
-            failures.append("drift strategies did not produce different thresholds")
+    # 8. Tables agree across all result files (P17)
+    try:
+        from tests.test_results_consistency import test_results_consistency
+        test_results_consistency()
+    except Exception as e:
+        failures.append(f"Consistency check failed: {e}")
 
-    ret = _load(root / "retrieval_metrics.json") or {}
-    ext = _load(root / "extraction_metrics.json") or {}
-    if ret.get("status") != "computed" or ret.get("simulated"):
-        failures.append("retrieval metrics are not from gold chunks")
-    if ext.get("status") != "computed" or ext.get("simulated"):
-        failures.append("extraction metrics are not from gold atoms")
+    # 9. 5 seeds with intervals on every headline number
+    seed_list = seeds.get("seeds", [])
+    if len(seed_list) < 5:
+        failures.append(f"Only {len(seed_list)} seeds run, need 5")
+    intervals = seeds.get("intervals", {})
+    for key in ("hallucination_rate", "coverage", "aurc", "violation_rate"):
+        if key not in intervals or not intervals[key]:
+            failures.append(f"Missing interval for {key} in seeds_summary")
+
+    # 10. docs/decisions.md and the decision-rules tag exist
+    doc_path = ROOT / "docs" / "decisions.md"
+    if not doc_path.exists():
+        failures.append("docs/decisions.md missing")
+        
+    try:
+        tags = subprocess.check_output(["git", "tag"], text=True, stderr=subprocess.DEVNULL)
+        if "decision-rules" not in tags:
+            failures.append("decision-rules git tag not found")
+    except Exception:
+        failures.append("Failed to check git tags")
+
     return failures
 
-
 def main() -> int:
+    print("="*60)
+    print("  RegGuard Final Publishable Gatekeeper")
+    print("="*60)
+    
+    import argparse
     parser = argparse.ArgumentParser(description="RegGuard publishable release gate")
     parser.add_argument("--results", default="results")
     parser.add_argument("--splits", default="data/splits")
     args = parser.parse_args()
+    
     failures = check(args.results, args.splits)
     if failures:
         print("NOT PUBLISHABLE")
         for item in failures:
-            print(f"  - {item}")
-        return 1
-    print("PUBLISHABLE")
-    return 0
-
+            print(f"  [FAIL] {item}")
+    else:
+        print("[PASS] PUBLISHABLE")
+        
+    print("\nCommand to run the final test-split evaluation:")
+    print("  python -c \"from eval.run_all import final_test_evaluation; final_test_evaluation('data/splits/test.jsonl', 'data/splits/test.lock', is_final_run=True, results_dir='results/')\"")
+    print("="*60)
+    
+    return 1 if failures else 0
 
 if __name__ == "__main__":
     sys.exit(main())

@@ -50,8 +50,16 @@ import random
 from typing import Dict, List, Optional, Tuple
 
 import numpy as np
+from scipy.stats import beta
 
 logger = logging.getLogger("eval.metrics")
+
+def clopper_pearson(k: int, n: int, alpha: float = 0.05) -> Tuple[float, float]:
+    if n == 0:
+        return (0.0, 1.0)
+    lower = beta.ppf(alpha / 2, k, n - k + 1) if k > 0 else 0.0
+    upper = beta.ppf(1 - alpha / 2, k + 1, n - k) if k < n else 1.0
+    return (float(lower), float(upper))
 
 # ── Atom-level metrics ────────────────────────────────────────────────────────
 
@@ -283,29 +291,60 @@ def extraction_recall(
     predicted_texts: List[str],
     gold_texts:      List[str],
     normalize:       bool = True,
+    fuzzy_threshold: float = 1.0,
 ) -> float:
     """
     Recall of atom extraction (per type, on text level).
     Normalises by lowercasing and stripping whitespace.
+    Supports fuzzy matching via difflib if fuzzy_threshold < 1.0.
     """
     if not gold_texts:
         return 1.0
     norm = (lambda s: s.lower().strip()) if normalize else (lambda s: s)
     pred_set = {norm(p) for p in predicted_texts}
-    return round(sum(1 for g in gold_texts if norm(g) in pred_set) / len(gold_texts), 6)
+    
+    hits = 0
+    import difflib
+    for g in gold_texts:
+        gn = norm(g)
+        if gn in pred_set:
+            hits += 1
+        elif fuzzy_threshold < 1.0:
+            # Check for close matches
+            for p in pred_set:
+                if difflib.SequenceMatcher(None, gn, p).ratio() >= fuzzy_threshold:
+                    hits += 1
+                    break
+                    
+    return round(hits / len(gold_texts), 6)
 
 
 def extraction_precision(
     predicted_texts: List[str],
     gold_texts:      List[str],
     normalize:       bool = True,
+    fuzzy_threshold: float = 1.0,
 ) -> float:
     """Precision of atom extraction."""
     if not predicted_texts:
         return 0.0
     norm = (lambda s: s.lower().strip()) if normalize else (lambda s: s)
     gold_set = {norm(g) for g in gold_texts}
-    return round(sum(1 for p in predicted_texts if norm(p) in gold_set) / len(predicted_texts), 6)
+    
+    hits = 0
+    import difflib
+    for p in predicted_texts:
+        pn = norm(p)
+        if pn in gold_set:
+            hits += 1
+        elif fuzzy_threshold < 1.0:
+            # Check for close matches
+            for g in gold_set:
+                if difflib.SequenceMatcher(None, pn, g).ratio() >= fuzzy_threshold:
+                    hits += 1
+                    break
+                    
+    return round(hits / len(predicted_texts), 6)
 
 
 def extraction_f1(recall: float, precision: float) -> float:

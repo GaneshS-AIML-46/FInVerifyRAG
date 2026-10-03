@@ -116,7 +116,8 @@ def run_simulation(
 
     result["mean_coverage"] = float(np.mean(coverages)) if coverages else float("nan")
     result["std_coverage"]  = float(np.std(coverages))  if coverages else float("nan")
-    result["std_lambda"]    = float(np.std([result["mean_lambda"]]))  # placeholder
+    # mean_lambda is already set by simulate_violation_rate; std_lambda is a placeholder
+    result["std_lambda"]    = 0.0
 
     logger.info(
         "Simulation summary: violation_rate=%.4f (target <=%.4f), "
