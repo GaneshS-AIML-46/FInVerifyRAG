@@ -68,3 +68,15 @@ splits:
   seed:  42
 
 allowed_annotators: ["human_1", "human_2", "reviewer"]
+
+inventory:
+  # Documents matching any of these title patterns are excluded from the inventory,
+  # split assignment, and question drafting.  Patterns are Python re.search() with re.I.
+  excluded_title_patterns:
+    - "^Auction for Sale"                              # operational auction notices
+    - "^Auction for.*[Rr]e.?issue of Government"      # backup pattern
+    - "^Auction of Government of India Dated"          # GOI dated-securities auctions
+  # Garbage-title thresholds: titles below min_len or above max_nonascii_ratio
+  # are replaced by the first English subject line extracted from page-1 text.
+  garbage_title_min_len: 8
+  garbage_title_max_nonascii_ratio: 0.30
