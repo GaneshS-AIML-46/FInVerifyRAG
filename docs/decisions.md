@@ -13,8 +13,9 @@ An optional signal or component will be removed from the primary pipeline only i
 **2. Atom Type Removal:**
 An atom type will be excluded from the main claim only if:
 - Its validation AUROC interval upper bound is **< 0.60**.
+- It has at least 20 supported and 20 unsupported atoms (otherwise it is marked "insufficient data").
 - AND merging the atom type into a parent stratum (M7 fallback) fails to fix it.
-- Note: Any atom type dropped from the main claim must still be reported in an appendix.
+- Note: Any atom type dropped from the main claim must still be reported in an appendix. Small strata are handled by M7 merging, not by dropping.
 
 ## Ablation Results & Outcomes
 

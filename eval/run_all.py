@@ -184,31 +184,9 @@ def run_all(
         paper_valid = False
 
     simulated = False
+    from common.validation import load_and_validate_data
     def _load_jsonl(path: str) -> list:
-        import json as _json
-        res = []
-        for l in open(path, encoding="utf-8"):
-            if not l.strip(): continue
-            row = _json.loads(l)
-            if strict:
-                if row.get("synthetic"):
-                    from common.errors import StrictFailure
-                    raise StrictFailure(f"Synthetic data found in {path}. Use real validation data.")
-                if "label" in row and not row.get("annotator_id"):
-                    from common.errors import StrictFailure
-                    raise StrictFailure(f"Missing annotator_id on labeled record in {path}.")
-            res.append(row)
-        if strict and res:
-            signals = ["s_ret", "s_ver", "s_nli", "s_ent", "s_div"]
-            for sig in signals:
-                vals = [r.get(sig) for r in res if r.get(sig) is not None]
-                if not vals:
-                    from common.errors import StrictFailure
-                    raise StrictFailure(f"Signal column '{sig}' is empty in {path}.")
-                if len(set(vals)) == 1:
-                    from common.errors import StrictFailure
-                    raise StrictFailure(f"Signal column '{sig}' is constant ({vals[0]}) in {path}.")
-        return res
+        return load_and_validate_data(path, strict)
 
     # ── Load or generate data ──────────────────────────────────────────────────
     if test_data and Path(test_data).exists():

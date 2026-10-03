@@ -57,3 +57,5 @@ paths:
   gold_atoms: data/gold/atoms.jsonl
   aggregator: models/aggregator/aggregator_v1.pkl
   results: results
+
+allowed_annotators: ["human_1", "human_2", "reviewer"]
