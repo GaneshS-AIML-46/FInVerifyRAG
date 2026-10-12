@@ -1,0 +1,169 @@
+{"question_id": "5d9bd14e-379f-45dd-96b1-c7530d5ba85a", "role": "generator", "model": "Qwen/Qwen2.5-7B-Instruct", "cost_usd": 0.0, "note": "local vLLM:8000 — no cost", "ts": "2026-10-05T06:26:55.990356+00:00"}
+{"question_id": "f1116889-9d3b-40b6-9071-54e0251c7c0c", "role": "generator", "model": "Qwen/Qwen2.5-7B-Instruct", "cost_usd": 0.0, "note": "local vLLM:8000 — no cost", "ts": "2026-10-05T06:27:27.788507+00:00"}
+{"question_id": "342ce8d3-a5d6-4074-a820-7b50e80367d4", "role": "generator", "model": "Qwen/Qwen2.5-7B-Instruct", "cost_usd": 0.0, "note": "local vLLM:8000 — no cost", "ts": "2026-10-05T06:27:58.782628+00:00"}
+{"question_id": "756154aa-9256-4bad-a952-2dcfa4597171", "role": "generator", "model": "Qwen/Qwen2.5-7B-Instruct", "cost_usd": 0.0, "note": "local vLLM:8000 — no cost", "ts": "2026-10-05T06:28:49.507970+00:00"}
+{"question_id": "9eb1ad56-1fbf-4846-bcc7-aeaef5ce8e49", "role": "generator", "model": "Qwen/Qwen2.5-7B-Instruct", "cost_usd": 0.0, "note": "local vLLM:8000 — no cost", "ts": "2026-10-05T06:29:00.720336+00:00"}
+{"question_id": "3a21effc-d01b-414a-bd1e-f1af4152879a", "role": "generator", "model": "Qwen/Qwen2.5-7B-Instruct", "cost_usd": 0.0, "note": "local vLLM:8000 — no cost", "ts": "2026-10-05T06:29:35.219330+00:00"}
+{"question_id": "0835bd82-e531-4d52-a432-21f548cb7462", "role": "generator", "model": "Qwen/Qwen2.5-7B-Instruct", "cost_usd": 0.0, "note": "local vLLM:8000 — no cost", "ts": "2026-10-05T06:29:40.431153+00:00"}
+{"question_id": "5d9bd14e-379f-45dd-96b1-c7530d5ba85a", "role": "generator", "model": "Qwen/Qwen2.5-7B-Instruct", "cost_usd": 0.0, "note": "local vLLM:8000 — no cost", "ts": "2026-10-05T06:29:53.036817+00:00"}
+{"question_id": "f1116889-9d3b-40b6-9071-54e0251c7c0c", "role": "generator", "model": "Qwen/Qwen2.5-7B-Instruct", "cost_usd": 0.0, "note": "local vLLM:8000 — no cost", "ts": "2026-10-05T06:30:11.198998+00:00"}
+{"question_id": "fb5341f9-ff14-4bdd-90a6-e4cc42d5e993", "role": "generator", "model": "Qwen/Qwen2.5-7B-Instruct", "cost_usd": 0.0, "note": "local vLLM:8000 — no cost", "ts": "2026-10-05T06:30:23.859628+00:00"}
+{"question_id": "a6043846-d87e-439d-9a47-bd8ecf408776", "role": "generator", "model": "Qwen/Qwen2.5-7B-Instruct", "cost_usd": 0.0, "note": "local vLLM:8000 — no cost", "ts": "2026-10-05T06:30:42.678834+00:00"}
+{"question_id": "756154aa-9256-4bad-a952-2dcfa4597171", "role": "generator", "model": "Qwen/Qwen2.5-7B-Instruct", "cost_usd": 0.0, "note": "local vLLM:8000 — no cost", "ts": "2026-10-05T06:30:49.471453+00:00"}
+{"question_id": "0835bd82-e531-4d52-a432-21f548cb7462", "role": "generator", "model": "Qwen/Qwen2.5-7B-Instruct", "cost_usd": 0.0, "note": "local vLLM:8000 — no cost", "ts": "2026-10-05T06:31:16.122134+00:00"}
+{"question_id": "1c0e6555-8889-46e3-b4d8-44b014f48790", "role": "generator", "model": "Qwen/Qwen2.5-7B-Instruct", "cost_usd": 0.0, "note": "local vLLM:8000 — no cost", "ts": "2026-10-05T06:31:20.517181+00:00"}
+{"question_id": "fb5341f9-ff14-4bdd-90a6-e4cc42d5e993", "role": "generator", "model": "Qwen/Qwen2.5-7B-Instruct", "cost_usd": 0.0, "note": "local vLLM:8000 — no cost", "ts": "2026-10-05T06:31:42.234654+00:00"}
+{"question_id": "a6043846-d87e-439d-9a47-bd8ecf408776", "role": "generator", "model": "Qwen/Qwen2.5-7B-Instruct", "cost_usd": 0.0, "note": "local vLLM:8000 — no cost", "ts": "2026-10-05T06:31:51.993657+00:00"}
+{"question_id": "9cdade8e-f84b-483a-bf0f-a5889f40083b", "role": "generator", "model": "Qwen/Qwen2.5-7B-Instruct", "cost_usd": 0.0, "note": "local vLLM:8000 — no cost", "ts": "2026-10-05T06:32:03.111994+00:00"}
+{"question_id": "1c0e6555-8889-46e3-b4d8-44b014f48790", "role": "generator", "model": "Qwen/Qwen2.5-7B-Instruct", "cost_usd": 0.0, "note": "local vLLM:8000 — no cost", "ts": "2026-10-05T06:32:06.484619+00:00"}
+{"question_id": "9cdade8e-f84b-483a-bf0f-a5889f40083b", "role": "generator", "model": "Qwen/Qwen2.5-7B-Instruct", "cost_usd": 0.0, "note": "local vLLM:8000 — no cost", "ts": "2026-10-05T06:32:19.122126+00:00"}
+{"question_id": "388918f5-7d8b-4c02-82db-da324520431d", "role": "generator", "model": "Qwen/Qwen2.5-7B-Instruct", "cost_usd": 0.0, "note": "local vLLM:8000 — no cost", "ts": "2026-10-05T06:32:33.719422+00:00"}
+{"question_id": "388918f5-7d8b-4c02-82db-da324520431d", "role": "generator", "model": "Qwen/Qwen2.5-7B-Instruct", "cost_usd": 0.0, "note": "local vLLM:8000 — no cost", "ts": "2026-10-05T06:32:41.581608+00:00"}
+{"question_id": "1cf965f1-a18f-45c4-b464-fa6ac8abde59", "role": "generator", "model": "Qwen/Qwen2.5-7B-Instruct", "cost_usd": 0.0, "note": "local vLLM:8000 — no cost", "ts": "2026-10-05T06:33:03.688149+00:00"}
+{"question_id": "1cf965f1-a18f-45c4-b464-fa6ac8abde59", "role": "generator", "model": "Qwen/Qwen2.5-7B-Instruct", "cost_usd": 0.0, "note": "local vLLM:8000 — no cost", "ts": "2026-10-05T06:33:10.882261+00:00"}
+{"question_id": "d54f1117-cf0f-4bba-9aed-bab92d8e14fd", "role": "generator", "model": "Qwen/Qwen2.5-7B-Instruct", "cost_usd": 0.0, "note": "local vLLM:8000 — no cost", "ts": "2026-10-05T06:33:22.272547+00:00"}
+{"question_id": "d54f1117-cf0f-4bba-9aed-bab92d8e14fd", "role": "generator", "model": "Qwen/Qwen2.5-7B-Instruct", "cost_usd": 0.0, "note": "local vLLM:8000 — no cost", "ts": "2026-10-05T06:33:27.877247+00:00"}
+{"question_id": "e2fbf445-8edf-455d-8430-bcdf08213d24", "role": "generator", "model": "Qwen/Qwen2.5-7B-Instruct", "cost_usd": 0.0, "note": "local vLLM:8000 — no cost", "ts": "2026-10-05T06:34:03.420281+00:00"}
+{"question_id": "e2fbf445-8edf-455d-8430-bcdf08213d24", "role": "generator", "model": "Qwen/Qwen2.5-7B-Instruct", "cost_usd": 0.0, "note": "local vLLM:8000 — no cost", "ts": "2026-10-05T06:34:08.197967+00:00"}
+{"question_id": "33e4f38e-5f88-45e4-b64b-6a4312c2e9b0", "role": "generator", "model": "Qwen/Qwen2.5-7B-Instruct", "cost_usd": 0.0, "note": "local vLLM:8000 — no cost", "ts": "2026-10-05T06:34:25.357721+00:00"}
+{"question_id": "33e4f38e-5f88-45e4-b64b-6a4312c2e9b0", "role": "generator", "model": "Qwen/Qwen2.5-7B-Instruct", "cost_usd": 0.0, "note": "local vLLM:8000 — no cost", "ts": "2026-10-05T06:34:28.825460+00:00"}
+{"question_id": "7265a236-22a0-4f17-b612-49556beae558", "role": "generator", "model": "Qwen/Qwen2.5-7B-Instruct", "cost_usd": 0.0, "note": "local vLLM:8000 — no cost", "ts": "2026-10-05T06:34:48.813940+00:00"}
+{"question_id": "7265a236-22a0-4f17-b612-49556beae558", "role": "generator", "model": "Qwen/Qwen2.5-7B-Instruct", "cost_usd": 0.0, "note": "local vLLM:8000 — no cost", "ts": "2026-10-05T06:34:50.719009+00:00"}
+{"question_id": "aa5ecb5b-ad3e-4972-a95c-3a8d324d5abe", "role": "generator", "model": "Qwen/Qwen2.5-7B-Instruct", "cost_usd": 0.0, "note": "local vLLM:8000 — no cost", "ts": "2026-10-05T06:35:15.692481+00:00"}
+{"question_id": "aa5ecb5b-ad3e-4972-a95c-3a8d324d5abe", "role": "generator", "model": "Qwen/Qwen2.5-7B-Instruct", "cost_usd": 0.0, "note": "local vLLM:8000 — no cost", "ts": "2026-10-05T06:35:15.727645+00:00"}
+{"question_id": "99a66e49-49d9-4c55-8671-3581f62a5deb", "role": "generator", "model": "Qwen/Qwen2.5-7B-Instruct", "cost_usd": 0.0, "note": "local vLLM:8000 — no cost", "ts": "2026-10-05T06:35:45.858285+00:00"}
+{"question_id": "99a66e49-49d9-4c55-8671-3581f62a5deb", "role": "generator", "model": "Qwen/Qwen2.5-7B-Instruct", "cost_usd": 0.0, "note": "local vLLM:8000 — no cost", "ts": "2026-10-05T06:35:45.923507+00:00"}
+{"question_id": "cef82757-2246-41af-ac71-a3a15ad9b992", "role": "generator", "model": "Qwen/Qwen2.5-7B-Instruct", "cost_usd": 0.0, "note": "local vLLM:8000 — no cost", "ts": "2026-10-05T06:36:33.553532+00:00"}
+{"question_id": "cef82757-2246-41af-ac71-a3a15ad9b992", "role": "generator", "model": "Qwen/Qwen2.5-7B-Instruct", "cost_usd": 0.0, "note": "local vLLM:8000 — no cost", "ts": "2026-10-05T06:36:33.575450+00:00"}
+{"question_id": "e0776279-0218-48ce-af39-8b67e2fe58a6", "role": "generator", "model": "Qwen/Qwen2.5-7B-Instruct", "cost_usd": 0.0, "note": "local vLLM:8000 — no cost", "ts": "2026-10-05T06:37:01.801204+00:00"}
+{"question_id": "e0776279-0218-48ce-af39-8b67e2fe58a6", "role": "generator", "model": "Qwen/Qwen2.5-7B-Instruct", "cost_usd": 0.0, "note": "local vLLM:8000 — no cost", "ts": "2026-10-05T06:37:01.869417+00:00"}
+{"question_id": "294fdff0-cb7f-45b3-aa0f-676e1b0565a5", "role": "generator", "model": "Qwen/Qwen2.5-7B-Instruct", "cost_usd": 0.0, "note": "local vLLM:8000 — no cost", "ts": "2026-10-05T06:37:37.431394+00:00"}
+{"question_id": "294fdff0-cb7f-45b3-aa0f-676e1b0565a5", "role": "generator", "model": "Qwen/Qwen2.5-7B-Instruct", "cost_usd": 0.0, "note": "local vLLM:8000 — no cost", "ts": "2026-10-05T06:37:37.576314+00:00"}
+{"question_id": "2b7df9ac-e009-4034-9382-95ba0f8d2db0", "role": "generator", "model": "Qwen/Qwen2.5-7B-Instruct", "cost_usd": 0.0, "note": "local vLLM:8000 — no cost", "ts": "2026-10-05T06:38:11.289687+00:00"}
+{"question_id": "2b7df9ac-e009-4034-9382-95ba0f8d2db0", "role": "generator", "model": "Qwen/Qwen2.5-7B-Instruct", "cost_usd": 0.0, "note": "local vLLM:8000 — no cost", "ts": "2026-10-05T06:38:11.354167+00:00"}
+{"question_id": "b76a1459-ff2d-445b-9af6-b917c0084b94", "role": "generator", "model": "Qwen/Qwen2.5-7B-Instruct", "cost_usd": 0.0, "note": "local vLLM:8000 — no cost", "ts": "2026-10-05T06:39:56.382145+00:00"}
+{"question_id": "b76a1459-ff2d-445b-9af6-b917c0084b94", "role": "generator", "model": "Qwen/Qwen2.5-7B-Instruct", "cost_usd": 0.0, "note": "local vLLM:8000 — no cost", "ts": "2026-10-05T06:39:56.406727+00:00"}
+{"question_id": "fa7ad18d-c114-443d-bd03-6e853b79287e", "role": "generator", "model": "Qwen/Qwen2.5-7B-Instruct", "cost_usd": 0.0, "note": "local vLLM:8000 — no cost", "ts": "2026-10-05T06:40:46.580094+00:00"}
+{"question_id": "fa7ad18d-c114-443d-bd03-6e853b79287e", "role": "generator", "model": "Qwen/Qwen2.5-7B-Instruct", "cost_usd": 0.0, "note": "local vLLM:8000 — no cost", "ts": "2026-10-05T06:40:46.613174+00:00"}
+{"question_id": "2527d7d7-f2c3-49e1-926b-d763fff0c10f", "role": "generator", "model": "Qwen/Qwen2.5-7B-Instruct", "cost_usd": 0.0, "note": "local vLLM:8000 — no cost", "ts": "2026-10-05T06:41:27.062831+00:00"}
+{"question_id": "2527d7d7-f2c3-49e1-926b-d763fff0c10f", "role": "generator", "model": "Qwen/Qwen2.5-7B-Instruct", "cost_usd": 0.0, "note": "local vLLM:8000 — no cost", "ts": "2026-10-05T06:41:27.125765+00:00"}
+{"question_id": "6c9de226-83b5-4ee9-9ce3-12a3f27d8e7b", "role": "generator", "model": "Qwen/Qwen2.5-7B-Instruct", "cost_usd": 0.0, "note": "local vLLM:8000 — no cost", "ts": "2026-10-05T06:41:43.150009+00:00"}
+{"question_id": "6c9de226-83b5-4ee9-9ce3-12a3f27d8e7b", "role": "generator", "model": "Qwen/Qwen2.5-7B-Instruct", "cost_usd": 0.0, "note": "local vLLM:8000 — no cost", "ts": "2026-10-05T06:41:43.251656+00:00"}
+{"question_id": "59331e5a-7f1f-4289-83d6-c21d8e4ec1f3", "role": "generator", "model": "Qwen/Qwen2.5-7B-Instruct", "cost_usd": 0.0, "note": "local vLLM:8000 — no cost", "ts": "2026-10-05T06:42:16.322260+00:00"}
+{"question_id": "59331e5a-7f1f-4289-83d6-c21d8e4ec1f3", "role": "generator", "model": "Qwen/Qwen2.5-7B-Instruct", "cost_usd": 0.0, "note": "local vLLM:8000 — no cost", "ts": "2026-10-05T06:42:16.335618+00:00"}
+{"question_id": "79284039-7e7d-4033-912f-a7ab8c656f90", "role": "generator", "model": "Qwen/Qwen2.5-7B-Instruct", "cost_usd": 0.0, "note": "local vLLM:8000 — no cost", "ts": "2026-10-05T06:42:49.121156+00:00"}
+{"question_id": "79284039-7e7d-4033-912f-a7ab8c656f90", "role": "generator", "model": "Qwen/Qwen2.5-7B-Instruct", "cost_usd": 0.0, "note": "local vLLM:8000 — no cost", "ts": "2026-10-05T06:42:49.151428+00:00"}
+{"question_id": "dc070f87-a378-4a23-8502-d4878adc6626", "role": "generator", "model": "Qwen/Qwen2.5-7B-Instruct", "cost_usd": 0.0, "note": "local vLLM:8000 — no cost", "ts": "2026-10-05T06:43:08.491978+00:00"}
+{"question_id": "dc070f87-a378-4a23-8502-d4878adc6626", "role": "generator", "model": "Qwen/Qwen2.5-7B-Instruct", "cost_usd": 0.0, "note": "local vLLM:8000 — no cost", "ts": "2026-10-05T06:43:08.516219+00:00"}
+{"question_id": "f964a4c7-9e97-4b3c-9cdb-0ed15792917b", "role": "generator", "model": "Qwen/Qwen2.5-7B-Instruct", "cost_usd": 0.0, "note": "local vLLM:8000 — no cost", "ts": "2026-10-05T06:43:35.226102+00:00"}
+{"question_id": "f964a4c7-9e97-4b3c-9cdb-0ed15792917b", "role": "generator", "model": "Qwen/Qwen2.5-7B-Instruct", "cost_usd": 0.0, "note": "local vLLM:8000 — no cost", "ts": "2026-10-05T06:43:35.243219+00:00"}
+{"question_id": "05364d6f-68a8-4811-9e17-4b1e8b2a185b", "role": "generator", "model": "Qwen/Qwen2.5-7B-Instruct", "cost_usd": 0.0, "note": "local vLLM:8000 — no cost", "ts": "2026-10-05T06:43:55.503171+00:00"}
+{"question_id": "05364d6f-68a8-4811-9e17-4b1e8b2a185b", "role": "generator", "model": "Qwen/Qwen2.5-7B-Instruct", "cost_usd": 0.0, "note": "local vLLM:8000 — no cost", "ts": "2026-10-05T06:43:55.513356+00:00"}
+{"ts": "2026-10-05T06:58:20.203390+00:00", "role": "atom_labeler", "model": "Qwen/Qwen2.5-7B-Instruct", "input_tokens": 2905, "output_tokens": 12, "cost_usd": 0.0, "cache_hit": false}
+{"ts": "2026-10-05T06:58:20.950433+00:00", "role": "atom_labeler", "model": "Qwen/Qwen2.5-7B-Instruct", "input_tokens": 2919, "output_tokens": 38, "cost_usd": 0.0, "cache_hit": false}
+{"ts": "2026-10-05T06:59:11.028107+00:00", "role": "atom_labeler", "model": "Qwen/Qwen2.5-7B-Instruct", "input_tokens": 2905, "output_tokens": 12, "cost_usd": 0.0, "cache_hit": true}
+{"ts": "2026-10-05T06:59:13.216649+00:00", "role": "atom_labeler", "model": "Qwen/Qwen2.5-7B-Instruct", "input_tokens": 2920, "output_tokens": 12, "cost_usd": 0.0, "cache_hit": false}
+{"ts": "2026-10-05T06:59:15.893304+00:00", "role": "atom_labeler", "model": "Qwen/Qwen2.5-7B-Instruct", "input_tokens": 3144, "output_tokens": 13, "cost_usd": 0.0, "cache_hit": false}
+{"ts": "2026-10-05T06:59:17.742141+00:00", "role": "atom_labeler", "model": "Qwen/Qwen2.5-7B-Instruct", "input_tokens": 1888, "output_tokens": 12, "cost_usd": 0.0, "cache_hit": false}
+{"ts": "2026-10-05T06:59:20.574851+00:00", "role": "atom_labeler", "model": "Qwen/Qwen2.5-7B-Instruct", "input_tokens": 3516, "output_tokens": 12, "cost_usd": 0.0, "cache_hit": false}
+{"ts": "2026-10-05T06:59:22.866422+00:00", "role": "atom_labeler", "model": "Qwen/Qwen2.5-7B-Instruct", "input_tokens": 2481, "output_tokens": 12, "cost_usd": 0.0, "cache_hit": false}
+{"ts": "2026-10-05T06:59:25.316872+00:00", "role": "atom_labeler", "model": "Qwen/Qwen2.5-7B-Instruct", "input_tokens": 2819, "output_tokens": 12, "cost_usd": 0.0, "cache_hit": false}
+{"ts": "2026-10-05T06:59:27.538203+00:00", "role": "atom_labeler", "model": "Qwen/Qwen2.5-7B-Instruct", "input_tokens": 2321, "output_tokens": 12, "cost_usd": 0.0, "cache_hit": false}
+{"ts": "2026-10-05T06:59:29.841306+00:00", "role": "atom_labeler", "model": "Qwen/Qwen2.5-7B-Instruct", "input_tokens": 2632, "output_tokens": 12, "cost_usd": 0.0, "cache_hit": false}
+{"ts": "2026-10-05T06:59:31.336044+00:00", "role": "atom_labeler", "model": "Qwen/Qwen2.5-7B-Instruct", "input_tokens": 2301, "output_tokens": 12, "cost_usd": 0.0, "cache_hit": false}
+{"ts": "2026-10-05T06:59:32.609333+00:00", "role": "atom_labeler", "model": "Qwen/Qwen2.5-7B-Instruct", "input_tokens": 1912, "output_tokens": 12, "cost_usd": 0.0, "cache_hit": false}
+{"ts": "2026-10-05T06:59:32.614978+00:00", "role": "atom_labeler", "model": "Qwen/Qwen2.5-7B-Instruct", "input_tokens": 3144, "output_tokens": 13, "cost_usd": 0.0, "cache_hit": true}
+{"ts": "2026-10-05T06:59:35.692527+00:00", "role": "atom_labeler", "model": "Qwen/Qwen2.5-7B-Instruct", "input_tokens": 3482, "output_tokens": 12, "cost_usd": 0.0, "cache_hit": false}
+{"ts": "2026-10-05T06:59:37.957216+00:00", "role": "atom_labeler", "model": "Qwen/Qwen2.5-7B-Instruct", "input_tokens": 2620, "output_tokens": 12, "cost_usd": 0.0, "cache_hit": false}
+{"ts": "2026-10-05T06:59:40.459229+00:00", "role": "atom_labeler", "model": "Qwen/Qwen2.5-7B-Instruct", "input_tokens": 3108, "output_tokens": 12, "cost_usd": 0.0, "cache_hit": false}
+{"ts": "2026-10-05T06:59:42.492741+00:00", "role": "atom_labeler", "model": "Qwen/Qwen2.5-7B-Instruct", "input_tokens": 3144, "output_tokens": 13, "cost_usd": 0.0, "cache_hit": false}
+{"ts": "2026-10-05T06:59:45.109717+00:00", "role": "atom_labeler", "model": "Qwen/Qwen2.5-7B-Instruct", "input_tokens": 3138, "output_tokens": 12, "cost_usd": 0.0, "cache_hit": false}
+{"ts": "2026-10-05T06:59:47.788893+00:00", "role": "atom_labeler", "model": "Qwen/Qwen2.5-7B-Instruct", "input_tokens": 3246, "output_tokens": 12, "cost_usd": 0.0, "cache_hit": false}
+{"ts": "2026-10-05T06:59:49.479368+00:00", "role": "atom_labeler", "model": "Qwen/Qwen2.5-7B-Instruct", "input_tokens": 2593, "output_tokens": 12, "cost_usd": 0.0, "cache_hit": false}
+{"ts": "2026-10-05T06:59:52.149176+00:00", "role": "atom_labeler", "model": "Qwen/Qwen2.5-7B-Instruct", "input_tokens": 3216, "output_tokens": 12, "cost_usd": 0.0, "cache_hit": false}
+{"ts": "2026-10-05T06:59:54.326154+00:00", "role": "atom_labeler", "model": "Qwen/Qwen2.5-7B-Instruct", "input_tokens": 2562, "output_tokens": 12, "cost_usd": 0.0, "cache_hit": false}
+{"ts": "2026-10-05T06:59:57.261558+00:00", "role": "atom_labeler", "model": "Qwen/Qwen2.5-7B-Instruct", "input_tokens": 3478, "output_tokens": 50, "cost_usd": 0.0, "cache_hit": false}
+{"ts": "2026-10-05T06:59:58.784400+00:00", "role": "atom_labeler", "model": "Qwen/Qwen2.5-7B-Instruct", "input_tokens": 2324, "output_tokens": 12, "cost_usd": 0.0, "cache_hit": false}
+{"ts": "2026-10-05T07:00:01.321534+00:00", "role": "atom_labeler", "model": "Qwen/Qwen2.5-7B-Instruct", "input_tokens": 2711, "output_tokens": 12, "cost_usd": 0.0, "cache_hit": false}
+{"ts": "2026-10-05T07:00:01.327794+00:00", "role": "atom_labeler", "model": "Qwen/Qwen2.5-7B-Instruct", "input_tokens": 2920, "output_tokens": 12, "cost_usd": 0.0, "cache_hit": true}
+{"ts": "2026-10-05T07:00:03.019279+00:00", "role": "atom_labeler", "model": "Qwen/Qwen2.5-7B-Instruct", "input_tokens": 2490, "output_tokens": 12, "cost_usd": 0.0, "cache_hit": false}
+{"ts": "2026-10-05T07:00:05.652685+00:00", "role": "atom_labeler", "model": "Qwen/Qwen2.5-7B-Instruct", "input_tokens": 3019, "output_tokens": 14, "cost_usd": 0.0, "cache_hit": false}
+{"ts": "2026-10-05T07:00:06.386460+00:00", "role": "atom_labeler", "model": "Qwen/Qwen2.5-7B-Instruct", "input_tokens": 3033, "output_tokens": 37, "cost_usd": 0.0, "cache_hit": false}
+{"ts": "2026-10-05T07:00:09.681938+00:00", "role": "atom_labeler", "model": "Qwen/Qwen2.5-7B-Instruct", "input_tokens": 3871, "output_tokens": 12, "cost_usd": 0.0, "cache_hit": false}
+{"ts": "2026-10-05T07:00:11.675894+00:00", "role": "atom_labeler", "model": "Qwen/Qwen2.5-7B-Instruct", "input_tokens": 1976, "output_tokens": 12, "cost_usd": 0.0, "cache_hit": false}
+{"ts": "2026-10-05T07:00:14.964555+00:00", "role": "atom_labeler", "model": "Qwen/Qwen2.5-7B-Instruct", "input_tokens": 2961, "output_tokens": 50, "cost_usd": 0.0, "cache_hit": false}
+{"ts": "2026-10-05T07:00:18.006282+00:00", "role": "atom_labeler", "model": "Qwen/Qwen2.5-7B-Instruct", "input_tokens": 3714, "output_tokens": 13, "cost_usd": 0.0, "cache_hit": false}
+{"ts": "2026-10-05T07:00:21.368994+00:00", "role": "atom_labeler", "model": "Qwen/Qwen2.5-7B-Instruct", "input_tokens": 3240, "output_tokens": 35, "cost_usd": 0.0, "cache_hit": false}
+{"ts": "2026-10-05T07:00:22.689986+00:00", "role": "atom_labeler", "model": "Qwen/Qwen2.5-7B-Instruct", "input_tokens": 1971, "output_tokens": 12, "cost_usd": 0.0, "cache_hit": false}
+{"ts": "2026-10-05T07:00:25.391769+00:00", "role": "atom_labeler", "model": "Qwen/Qwen2.5-7B-Instruct", "input_tokens": 3434, "output_tokens": 12, "cost_usd": 0.0, "cache_hit": false}
+{"ts": "2026-10-05T07:00:25.397624+00:00", "role": "atom_labeler", "model": "Qwen/Qwen2.5-7B-Instruct", "input_tokens": 2321, "output_tokens": 12, "cost_usd": 0.0, "cache_hit": true}
+{"ts": "2026-10-05T07:00:28.265569+00:00", "role": "atom_labeler", "model": "Qwen/Qwen2.5-7B-Instruct", "input_tokens": 3492, "output_tokens": 46, "cost_usd": 0.0, "cache_hit": false}
+{"ts": "2026-10-05T07:00:28.272799+00:00", "role": "atom_labeler", "model": "Qwen/Qwen2.5-7B-Instruct", "input_tokens": 3216, "output_tokens": 12, "cost_usd": 0.0, "cache_hit": true}
+{"ts": "2026-10-05T07:00:30.028707+00:00", "role": "atom_labeler", "model": "Qwen/Qwen2.5-7B-Instruct", "input_tokens": 2670, "output_tokens": 13, "cost_usd": 0.0, "cache_hit": false}
+{"ts": "2026-10-05T07:00:32.029096+00:00", "role": "atom_labeler", "model": "Qwen/Qwen2.5-7B-Instruct", "input_tokens": 3102, "output_tokens": 12, "cost_usd": 0.0, "cache_hit": false}
+{"ts": "2026-10-05T07:00:33.314252+00:00", "role": "atom_labeler", "model": "Qwen/Qwen2.5-7B-Instruct", "input_tokens": 1911, "output_tokens": 12, "cost_usd": 0.0, "cache_hit": false}
+{"ts": "2026-10-05T07:00:33.315262+00:00", "role": "atom_labeler", "model": "Qwen/Qwen2.5-7B-Instruct", "input_tokens": 3144, "output_tokens": 13, "cost_usd": 0.0, "cache_hit": true}
+{"ts": "2026-10-05T07:00:33.320641+00:00", "role": "atom_labeler", "model": "Qwen/Qwen2.5-7B-Instruct", "input_tokens": 2819, "output_tokens": 12, "cost_usd": 0.0, "cache_hit": true}
+{"ts": "2026-10-05T07:00:35.361362+00:00", "role": "atom_labeler", "model": "Qwen/Qwen2.5-7B-Instruct", "input_tokens": 3144, "output_tokens": 13, "cost_usd": 0.0, "cache_hit": false}
+{"ts": "2026-10-05T07:00:35.362599+00:00", "role": "atom_labeler", "model": "Qwen/Qwen2.5-7B-Instruct", "input_tokens": 3144, "output_tokens": 13, "cost_usd": 0.0, "cache_hit": true}
+{"ts": "2026-10-05T07:00:35.367732+00:00", "role": "atom_labeler", "model": "Qwen/Qwen2.5-7B-Instruct", "input_tokens": 3871, "output_tokens": 12, "cost_usd": 0.0, "cache_hit": true}
+{"ts": "2026-10-05T07:00:37.614755+00:00", "role": "atom_labeler", "model": "Qwen/Qwen2.5-7B-Instruct", "input_tokens": 3462, "output_tokens": 12, "cost_usd": 0.0, "cache_hit": false}
+{"ts": "2026-10-05T07:00:41.294060+00:00", "role": "atom_labeler", "model": "Qwen/Qwen2.5-7B-Instruct", "input_tokens": 4647, "output_tokens": 13, "cost_usd": 0.0, "cache_hit": false}
+{"ts": "2026-10-05T07:00:44.249997+00:00", "role": "atom_labeler", "model": "Qwen/Qwen2.5-7B-Instruct", "input_tokens": 3491, "output_tokens": 50, "cost_usd": 0.0, "cache_hit": false}
+{"ts": "2026-10-05T07:00:44.256605+00:00", "role": "atom_labeler", "model": "Qwen/Qwen2.5-7B-Instruct", "input_tokens": 3138, "output_tokens": 12, "cost_usd": 0.0, "cache_hit": true}
+{"ts": "2026-10-05T07:00:44.262649+00:00", "role": "atom_labeler", "model": "Qwen/Qwen2.5-7B-Instruct", "input_tokens": 2670, "output_tokens": 13, "cost_usd": 0.0, "cache_hit": true}
+{"ts": "2026-10-05T07:00:47.267379+00:00", "role": "atom_labeler", "model": "Qwen/Qwen2.5-7B-Instruct", "input_tokens": 4641, "output_tokens": 13, "cost_usd": 0.0, "cache_hit": false}
+{"ts": "2026-10-05T07:00:47.274348+00:00", "role": "atom_labeler", "model": "Qwen/Qwen2.5-7B-Instruct", "input_tokens": 3434, "output_tokens": 12, "cost_usd": 0.0, "cache_hit": true}
+{"ts": "2026-10-05T07:00:50.204894+00:00", "role": "atom_labeler", "model": "Qwen/Qwen2.5-7B-Instruct", "input_tokens": 3587, "output_tokens": 12, "cost_usd": 0.0, "cache_hit": false}
+{"ts": "2026-10-05T07:00:52.233125+00:00", "role": "atom_labeler", "model": "Qwen/Qwen2.5-7B-Instruct", "input_tokens": 3127, "output_tokens": 12, "cost_usd": 0.0, "cache_hit": false}
+{"ts": "2026-10-05T07:00:53.574166+00:00", "role": "atom_labeler", "model": "Qwen/Qwen2.5-7B-Instruct", "input_tokens": 1994, "output_tokens": 12, "cost_usd": 0.0, "cache_hit": false}
+{"ts": "2026-10-05T07:00:55.881675+00:00", "role": "atom_labeler", "model": "Qwen/Qwen2.5-7B-Instruct", "input_tokens": 3579, "output_tokens": 12, "cost_usd": 0.0, "cache_hit": false}
+{"ts": "2026-10-05T07:00:58.983590+00:00", "role": "atom_labeler", "model": "Qwen/Qwen2.5-7B-Instruct", "input_tokens": 3903, "output_tokens": 12, "cost_usd": 0.0, "cache_hit": false}
+{"ts": "2026-10-05T07:00:58.989211+00:00", "role": "atom_labeler", "model": "Qwen/Qwen2.5-7B-Instruct", "input_tokens": 4647, "output_tokens": 13, "cost_usd": 0.0, "cache_hit": true}
+{"ts": "2026-10-05T07:00:58.994107+00:00", "role": "atom_labeler", "model": "Qwen/Qwen2.5-7B-Instruct", "input_tokens": 3108, "output_tokens": 12, "cost_usd": 0.0, "cache_hit": true}
+{"ts": "2026-10-05T07:01:01.738833+00:00", "role": "atom_labeler", "model": "Qwen/Qwen2.5-7B-Instruct", "input_tokens": 3233, "output_tokens": 12, "cost_usd": 0.0, "cache_hit": false}
+{"ts": "2026-10-05T07:01:01.745058+00:00", "role": "atom_labeler", "model": "Qwen/Qwen2.5-7B-Instruct", "input_tokens": 3903, "output_tokens": 12, "cost_usd": 0.0, "cache_hit": true}
+{"ts": "2026-10-05T07:01:01.750431+00:00", "role": "atom_labeler", "model": "Qwen/Qwen2.5-7B-Instruct", "input_tokens": 3246, "output_tokens": 12, "cost_usd": 0.0, "cache_hit": true}
+{"ts": "2026-10-05T07:01:01.756314+00:00", "role": "atom_labeler", "model": "Qwen/Qwen2.5-7B-Instruct", "input_tokens": 1911, "output_tokens": 12, "cost_usd": 0.0, "cache_hit": true}
+{"ts": "2026-10-05T07:01:01.761797+00:00", "role": "atom_labeler", "model": "Qwen/Qwen2.5-7B-Instruct", "input_tokens": 3516, "output_tokens": 12, "cost_usd": 0.0, "cache_hit": true}
+{"ts": "2026-10-05T07:01:01.766498+00:00", "role": "atom_labeler", "model": "Qwen/Qwen2.5-7B-Instruct", "input_tokens": 3240, "output_tokens": 35, "cost_usd": 0.0, "cache_hit": true}
+{"ts": "2026-10-05T07:01:01.772240+00:00", "role": "atom_labeler", "model": "Qwen/Qwen2.5-7B-Instruct", "input_tokens": 1976, "output_tokens": 12, "cost_usd": 0.0, "cache_hit": true}
+{"ts": "2026-10-05T07:01:04.917302+00:00", "role": "atom_labeler", "model": "Qwen/Qwen2.5-7B-Instruct", "input_tokens": 4012, "output_tokens": 12, "cost_usd": 0.0, "cache_hit": false}
+{"ts": "2026-10-05T07:01:04.922950+00:00", "role": "atom_labeler", "model": "Qwen/Qwen2.5-7B-Instruct", "input_tokens": 2632, "output_tokens": 12, "cost_usd": 0.0, "cache_hit": true}
+{"ts": "2026-10-05T07:01:04.923456+00:00", "role": "atom_labeler", "model": "Qwen/Qwen2.5-7B-Instruct", "input_tokens": 2905, "output_tokens": 12, "cost_usd": 0.0, "cache_hit": true}
+{"ts": "2026-10-05T07:01:04.928861+00:00", "role": "atom_labeler", "model": "Qwen/Qwen2.5-7B-Instruct", "input_tokens": 3579, "output_tokens": 12, "cost_usd": 0.0, "cache_hit": true}
+{"ts": "2026-10-05T07:01:07.019745+00:00", "role": "atom_labeler", "model": "Qwen/Qwen2.5-7B-Instruct", "input_tokens": 3231, "output_tokens": 12, "cost_usd": 0.0, "cache_hit": false}
+{"ts": "2026-10-05T07:01:08.871762+00:00", "role": "atom_labeler", "model": "Qwen/Qwen2.5-7B-Instruct", "input_tokens": 2795, "output_tokens": 12, "cost_usd": 0.0, "cache_hit": false}
+{"ts": "2026-10-05T07:01:11.000053+00:00", "role": "atom_labeler", "model": "Qwen/Qwen2.5-7B-Instruct", "input_tokens": 3243, "output_tokens": 12, "cost_usd": 0.0, "cache_hit": false}
+{"ts": "2026-10-05T07:01:14.174304+00:00", "role": "atom_labeler", "model": "Qwen/Qwen2.5-7B-Instruct", "input_tokens": 3683, "output_tokens": 13, "cost_usd": 0.0, "cache_hit": false}
+{"ts": "2026-10-05T07:01:14.180211+00:00", "role": "atom_labeler", "model": "Qwen/Qwen2.5-7B-Instruct", "input_tokens": 3478, "output_tokens": 50, "cost_usd": 0.0, "cache_hit": true}
+{"ts": "2026-10-05T07:01:14.186026+00:00", "role": "atom_labeler", "model": "Qwen/Qwen2.5-7B-Instruct", "input_tokens": 2301, "output_tokens": 12, "cost_usd": 0.0, "cache_hit": true}
+{"ts": "2026-10-05T07:01:16.464367+00:00", "role": "atom_labeler", "model": "Qwen/Qwen2.5-7B-Instruct", "input_tokens": 3484, "output_tokens": 12, "cost_usd": 0.0, "cache_hit": false}
+{"ts": "2026-10-05T07:01:16.471551+00:00", "role": "atom_labeler", "model": "Qwen/Qwen2.5-7B-Instruct", "input_tokens": 2711, "output_tokens": 12, "cost_usd": 0.0, "cache_hit": true}
+{"ts": "2026-10-05T07:01:18.395529+00:00", "role": "atom_labeler", "model": "Qwen/Qwen2.5-7B-Instruct", "input_tokens": 2907, "output_tokens": 12, "cost_usd": 0.0, "cache_hit": false}
+{"ts": "2026-10-05T07:01:18.401172+00:00", "role": "atom_labeler", "model": "Qwen/Qwen2.5-7B-Instruct", "input_tokens": 2620, "output_tokens": 12, "cost_usd": 0.0, "cache_hit": true}
+{"ts": "2026-10-05T07:01:18.407611+00:00", "role": "atom_labeler", "model": "Qwen/Qwen2.5-7B-Instruct", "input_tokens": 1971, "output_tokens": 12, "cost_usd": 0.0, "cache_hit": true}
+{"ts": "2026-10-05T07:01:21.710455+00:00", "role": "atom_labeler", "model": "Qwen/Qwen2.5-7B-Instruct", "input_tokens": 3953, "output_tokens": 12, "cost_usd": 0.0, "cache_hit": false}
+{"ts": "2026-10-05T07:01:24.286823+00:00", "role": "atom_labeler", "model": "Qwen/Qwen2.5-7B-Instruct", "input_tokens": 4003, "output_tokens": 12, "cost_usd": 0.0, "cache_hit": false}
+{"ts": "2026-10-05T07:01:26.685576+00:00", "role": "atom_labeler", "model": "Qwen/Qwen2.5-7B-Instruct", "input_tokens": 3698, "output_tokens": 13, "cost_usd": 0.0, "cache_hit": false}
+{"ts": "2026-10-05T07:01:26.691453+00:00", "role": "atom_labeler", "model": "Qwen/Qwen2.5-7B-Instruct", "input_tokens": 3231, "output_tokens": 12, "cost_usd": 0.0, "cache_hit": true}
+{"ts": "2026-10-05T07:01:29.256486+00:00", "role": "atom_labeler", "model": "Qwen/Qwen2.5-7B-Instruct", "input_tokens": 3996, "output_tokens": 12, "cost_usd": 0.0, "cache_hit": false}
+{"ts": "2026-10-05T07:01:32.066853+00:00", "role": "atom_labeler", "model": "Qwen/Qwen2.5-7B-Instruct", "input_tokens": 3541, "output_tokens": 12, "cost_usd": 0.0, "cache_hit": false}
+{"ts": "2026-10-05T07:56:27.391849+00:00", "role": "atom_labeler", "model": "qwen/qwen3.8-27b", "input_tokens": 2947, "output_tokens": 44, "cost_usd": 0.00088059, "cache_hit": false}
+{"ts": "2026-10-05T07:56:28.082622+00:00", "role": "atom_labeler", "model": "qwen/qwen3.8-27b", "input_tokens": 2613, "output_tokens": 59, "cost_usd": 0.00079258, "cache_hit": false}
+{"ts": "2026-10-05T07:56:46.727153+00:00", "role": "atom_labeler", "model": "qwen/qwen3.8-27b", "input_tokens": 3562, "output_tokens": 101, "cost_usd": 0.00109257, "cache_hit": false}
+{"ts": "2026-10-05T07:57:18.314570+00:00", "role": "atom_labeler", "model": "qwen/qwen3.8-27b", "input_tokens": 3724, "output_tokens": 54, "cost_usd": 0.00111182, "cache_hit": false}
+{"ts": "2026-10-05T07:57:40.928736+00:00", "role": "atom_labeler", "model": "qwen/qwen3.8-27b", "input_tokens": 2618, "output_tokens": 46, "cost_usd": 0.0007863599999999999, "cache_hit": false}
+{"ts": "2026-10-05T07:58:11.502308+00:00", "role": "atom_labeler", "model": "qwen/qwen3.8-27b", "input_tokens": 3571, "output_tokens": 67, "cost_usd": 0.00107512, "cache_hit": false}
+{"ts": "2026-10-05T07:58:11.502709+00:00", "role": "atom_labeler", "model": "qwen/qwen3.8-27b", "input_tokens": 3724, "output_tokens": 54, "cost_usd": 0.0, "cache_hit": true}
+{"ts": "2026-10-05T07:58:36.199268+00:00", "role": "atom_labeler", "model": "qwen/qwen3.8-27b", "input_tokens": 2946, "output_tokens": 36, "cost_usd": 0.0008755799999999999, "cache_hit": false}
+{"ts": "2026-10-05T07:58:57.760146+00:00", "role": "atom_labeler", "model": "qwen/qwen3.8-27b", "input_tokens": 2536, "output_tokens": 84, "cost_usd": 0.0007849999999999999, "cache_hit": false}
+{"ts": "2026-10-05T07:59:20.244353+00:00", "role": "atom_labeler", "model": "qwen/qwen3.8-27b", "input_tokens": 2540, "output_tokens": 46, "cost_usd": 0.00076374, "cache_hit": false}
+{"ts": "2026-10-05T07:59:52.908214+00:00", "role": "atom_labeler", "model": "qwen/qwen3.8-27b", "input_tokens": 3816, "output_tokens": 87, "cost_usd": 0.0011579699999999997, "cache_hit": false}
+{"ts": "2026-10-05T08:00:23.765109+00:00", "role": "atom_labeler", "model": "qwen/qwen3.8-27b", "input_tokens": 3531, "output_tokens": 69, "cost_usd": 0.0010646999999999998, "cache_hit": false}
+{"ts": "2026-10-05T08:00:40.352073+00:00", "role": "atom_labeler", "model": "qwen/qwen3.8-27b", "input_tokens": 2057, "output_tokens": 65, "cost_usd": 0.00063488, "cache_hit": false}
+{"ts": "2026-10-05T08:01:05.869988+00:00", "role": "atom_labeler", "model": "qwen/qwen3.8-27b", "input_tokens": 2902, "output_tokens": 55, "cost_usd": 0.0008740299999999999, "cache_hit": false}
+{"ts": "2026-10-05T08:01:30.449980+00:00", "role": "atom_labeler", "model": "qwen/qwen3.8-27b", "input_tokens": 2870, "output_tokens": 62, "cost_usd": 0.00086888, "cache_hit": false}
+{"ts": "2026-10-05T08:02:04.158236+00:00", "role": "atom_labeler", "model": "qwen/qwen3.8-27b", "input_tokens": 3930, "output_tokens": 102, "cost_usd": 0.00119988, "cache_hit": false}
+{"ts": "2026-10-05T08:02:30.698160+00:00", "role": "atom_labeler", "model": "qwen/qwen3.8-27b", "input_tokens": 3097, "output_tokens": 53, "cost_usd": 0.0009293999999999998, "cache_hit": false}
+{"ts": "2026-10-05T08:02:58.294345+00:00", "role": "atom_labeler", "model": "qwen/qwen3.8-27b", "input_tokens": 3296, "output_tokens": 78, "cost_usd": 0.0010018599999999998, "cache_hit": false}

@@ -25,9 +25,14 @@ evaluation_report.json
 # Environment variables and virtual environments
 .env
 .venv/
+.venv*/
 venv/
 ENV/
 env/
+
+# Cache directories
+.llm_cache/
+
 
 # IDE & Editor files
 .vscode/

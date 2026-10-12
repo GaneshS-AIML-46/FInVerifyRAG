@@ -1,0 +1,51 @@
+atom_id,label,reason,label_source,model
+1cf965f1-a18f-45c4-b464-fa6ac8abde59_atom_3d010f7c,supported,short,llm,Qwen/Qwen2.5-7B-Instruct
+9cdade8e-f84b-483a-bf0f-a5889f40083b_atom_d4d8b0f2,supported,The passage states that Foreign Portfolio Investors (FPIs) are now permitted in addition to NRIs and PIOs.,llm,Qwen/Qwen2.5-7B-Instruct
+0835bd82-e531-4d52-a432-21f548cb7462_atom_2d8185b5,supported,short,llm,Qwen/Qwen2.5-7B-Instruct
+d54f1117-cf0f-4bba-9aed-bab92d8e14fd_atom_c0d9f126,supported,short,llm,Qwen/Qwen2.5-7B-Instruct
+7265a236-22a0-4f17-b612-49556beae558_atom_d5b889b0,unsupported,short,llm,Qwen/Qwen2.5-7B-Instruct
+cef82757-2246-41af-ac71-a3a15ad9b992_atom_e9c86de4,unsupported,short,llm,Qwen/Qwen2.5-7B-Instruct
+fb5341f9-ff14-4bdd-90a6-e4cc42d5e993_atom_8adda015,supported,short,llm,Qwen/Qwen2.5-7B-Instruct
+fb5341f9-ff14-4bdd-90a6-e4cc42d5e993_atom_4ddf1b0b,supported,short,llm,Qwen/Qwen2.5-7B-Instruct
+33e4f38e-5f88-45e4-b64b-6a4312c2e9b0_atom_087acdd4,supported,short,llm,Qwen/Qwen2.5-7B-Instruct
+f1116889-9d3b-40b6-9071-54e0251c7c0c_atom_c62d1f92,supported,short,llm,Qwen/Qwen2.5-7B-Instruct
+1c0e6555-8889-46e3-b4d8-44b014f48790_atom_a160d8eb,unsupported,short,llm,Qwen/Qwen2.5-7B-Instruct
+cef82757-2246-41af-ac71-a3a15ad9b992_atom_a4c41486,unsupported,short,llm,Qwen/Qwen2.5-7B-Instruct
+cef82757-2246-41af-ac71-a3a15ad9b992_atom_3d93051a,unsupported,short,llm,Qwen/Qwen2.5-7B-Instruct
+9eb1ad56-1fbf-4846-bcc7-aeaef5ce8e49_atom_a3514a10,supported,short,llm,Qwen/Qwen2.5-7B-Instruct
+79284039-7e7d-4033-912f-a7ab8c656f90_atom_1dddb06c,supported,short,llm,Qwen/Qwen2.5-7B-Instruct
+f964a4c7-9e97-4b3c-9cdb-0ed15792917b_atom_0e114f62,supported,short,llm,Qwen/Qwen2.5-7B-Instruct
+388918f5-7d8b-4c02-82db-da324520431d_atom_bef8d6cc,unsupported,short,llm,Qwen/Qwen2.5-7B-Instruct
+7265a236-22a0-4f17-b612-49556beae558_atom_efacd314,supported,short,llm,Qwen/Qwen2.5-7B-Instruct
+cef82757-2246-41af-ac71-a3a15ad9b992_atom_38e3b451,unsupported,short,llm,Qwen/Qwen2.5-7B-Instruct
+388918f5-7d8b-4c02-82db-da324520431d_atom_cb571c19,unsupported,short,llm,Qwen/Qwen2.5-7B-Instruct
+5d9bd14e-379f-45dd-96b1-c7530d5ba85a_atom_da3864b7,supported,short,llm,Qwen/Qwen2.5-7B-Instruct
+1cf965f1-a18f-45c4-b464-fa6ac8abde59_atom_13ea38f4,supported,short,llm,Qwen/Qwen2.5-7B-Instruct
+f1116889-9d3b-40b6-9071-54e0251c7c0c_atom_a7a4bcd2,supported,short,llm,Qwen/Qwen2.5-7B-Instruct
+33e4f38e-5f88-45e4-b64b-6a4312c2e9b0_atom_84fc897a,supported,short,llm,Qwen/Qwen2.5-7B-Instruct
+3a21effc-d01b-414a-bd1e-f1af4152879a_atom_6cf7f8e1,supported,short,llm,Qwen/Qwen2.5-7B-Instruct
+5d9bd14e-379f-45dd-96b1-c7530d5ba85a_atom_3970cf1a,supported,short,llm,Qwen/Qwen2.5-7B-Instruct
+388918f5-7d8b-4c02-82db-da324520431d_atom_d6be91d0,unsupported,short,llm,Qwen/Qwen2.5-7B-Instruct
+2b7df9ac-e009-4034-9382-95ba0f8d2db0_atom_bb59c58f,supported,short,llm,Qwen/Qwen2.5-7B-Instruct
+756154aa-9256-4bad-a952-2dcfa4597171_atom_f23e4669,supported,short,llm,Qwen/Qwen2.5-7B-Instruct
+756154aa-9256-4bad-a952-2dcfa4597171_atom_31bb678c,supported,short,llm,Qwen/Qwen2.5-7B-Instruct
+0835bd82-e531-4d52-a432-21f548cb7462_atom_79a1657f,supported,short,llm,Qwen/Qwen2.5-7B-Instruct
+33e4f38e-5f88-45e4-b64b-6a4312c2e9b0_atom_4009660c,supported,short,llm,Qwen/Qwen2.5-7B-Instruct
+0835bd82-e531-4d52-a432-21f548cb7462_atom_64e59aec,supported,The source passage explicitly states that 'Share-linked instruments shall be fair valued on the date of grant by the bank using Black-Scholes model.',llm,qwen/qwen3.8-27b
+6c9de226-83b5-4ee9-9ce3-12a3f27d8e7b_atom_b3fd86a6,supported,"The source passage explicitly states that the directions regarding the compliance of existing digital loans are issued under sections 21, 35A, and 56 of the Banking Regulation Act, 1949.",llm,qwen/qwen3.8-27b
+b76a1459-ff2d-445b-9af6-b917c0084b94_atom_b6e512f1,supported,"The source passage explicitly states in paragraph 4.1 that 'Clause 22.1.1 of the Master Circular stands modified' to define the valuation of securities other than unlisted, non-traded, and thinly traded listed securities. The atom 'Clause 22' is a valid reference to this specific clause (22.1.1) within the context of the Master Circular's Chapter 22.",llm,qwen/qwen3.8-27b
+294fdff0-cb7f-45b3-aa0f-676e1b0565a5_atom_5fdfe5d7,supported,"The source passage for 'Reporting of March 2025 transactions' explicitly states: 'This procedure should continue upto and inclusive of April 10, 2025 only.'",llm,qwen/qwen3.8-27b
+2b7df9ac-e009-4034-9382-95ba0f8d2db0_atom_a90587cc,supported,The source passage explicitly states that employees in sensitive positions must be sent on leave for 'not less than 10 working days' in a single spell.,llm,qwen/qwen3.8-27b
+b76a1459-ff2d-445b-9af6-b917c0084b94_atom_582d9e51,supported,"The source passage explicitly states in paragraph 4.1 that 'Clause 22.1.1 of the Master Circular stands modified' and provides the text defining valuation norms for securities other than unlisted, non-traded, and thinly traded listed securities.",llm,qwen/qwen3.8-27b
+294fdff0-cb7f-45b3-aa0f-676e1b0565a5_atom_dd845c29,supported,"The source passage for 'Reporting of March 2025 transactions' explicitly states: 'This procedure should continue upto and inclusive of April 10, 2025 only.'",llm,qwen/qwen3.8-27b
+0835bd82-e531-4d52-a432-21f548cb7462_atom_86b19c94,supported,The source passage explicitly states that 'Share-linked instruments shall be fair valued on the date of grant'.,llm,qwen/qwen3.8-27b
+9eb1ad56-1fbf-4846-bcc7-aeaef5ce8e49_atom_faa1959e,supported,"The source passage explicitly states in paragraph 3 that 'the paragraph 1.2 (i) (i) of the Master Circular shall stand modified'. The atom states 'paragraph 1', which is a valid shorthand or partial reference to 'paragraph 1.2 (i) (i)' in the context of identifying the modified section.",llm,qwen/qwen3.8-27b
+9eb1ad56-1fbf-4846-bcc7-aeaef5ce8e49_atom_4e55ddb6,supported,Paragraph 2 of the source passage explicitly states that it has been decided to allow a non-individual IA to obtain the annual compliance certificate from any auditor.,llm,qwen/qwen3.8-27b
+1c0e6555-8889-46e3-b4d8-44b014f48790_atom_13a4520f,unsupported,"The source passage states that validation must be completed within 180 days from November 01, 2022 (which is approximately April 30, 2023), not that the deadline is November 01, 2022. November 01, 2022 is the commencement date.",llm,qwen/qwen3.8-27b
+2527d7d7-f2c3-49e1-926b-d763fff0c10f_atom_cda21b2a,supported,"The source passage explicitly states in paragraph 2 that the 'Master Direction – Reserve Bank of India (Credit Derivatives) Directions, 2022' has been updated to clarify that NaBFID is permitted to participate as an AIFI in financial markets.",llm,qwen/qwen3.8-27b
+e0776279-0218-48ce-af39-8b67e2fe58a6_atom_024fb06e,supported,"The source passage explicitly states in paragraph 4 and 10 that the circular is issued in exercise of powers conferred under Section 11(1) of Chapter IV of the Securities and Exchange Board of India Act, 1992.",llm,qwen/qwen3.8-27b
+99a66e49-49d9-4c55-8671-3581f62a5deb_atom_2b3406db,supported,Paragraph 8 and FAQ 42 explicitly state that clients whose KYC attributes cannot be verified by KRAs shall not be allowed to transact further in the securities market until the attributes are verified.,llm,qwen/qwen3.8-27b
+33e4f38e-5f88-45e4-b64b-6a4312c2e9b0_atom_0bfd7622,supported,"The source passage explicitly states in point I of the amendment list: 'In clause 2 of the circular, the words and brackets “(including institutional/corporate clients)” are added after the words “Investors/Clients”.'",llm,qwen/qwen3.8-27b
+e2fbf445-8edf-455d-8430-bcdf08213d24_atom_fca596ac,supported,"The source passage (Circular DOR.STR.REC.45/04.02.001/2024-25) explicitly states in point 2(a) that 'Fiscal benefits of each MSME, on aggregate, will be restricted to ₹50 lakhs for the Financial Year 2024-25 till December 31, 2024.'",llm,qwen/qwen3.8-27b
+dc070f87-a378-4a23-8502-d4878adc6626_atom_0f0ce610,supported,"The source passage explicitly states: ""For the purpose of these Directions, ‘Commercial Banks’ mean banking companies (other than Small Finance Banks, Payment Banks, and Local Area Banks)"".",llm,qwen/qwen3.8-27b
+f1116889-9d3b-40b6-9071-54e0251c7c0c_atom_5633d59c,supported,"The source passage explicitly states in point 7 that the directive is issued under Section 10 (2) read with Section 18 of the Payment and Settlement Systems Act, 2007. The atom correctly identifies Section 18 as one of the specific sections under which the directive was issued.",llm,qwen/qwen3.8-27b

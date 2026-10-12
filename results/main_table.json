@@ -1,5 +1,10 @@
 {
-  "status": "not_available",
-  "reason": "per-system risks require signal columns on held-out atoms",
-  "simulated": false
+  "system": "RegGuard-pilot-v1",
+  "coverage": 1.0,
+  "hallucination_rate": 0.2154,
+  "hallucination_ci_low": 0.1231,
+  "hallucination_ci_high": 0.3349,
+  "aurc": 0.1215,
+  "ltt_certified": false,
+  "note": "LTT threshold not applied. Conformal guarantee not certified. Pilot size insufficient."
 }

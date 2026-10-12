@@ -1,25 +1,13 @@
 {
-  "seed": 42,
-  "n_atoms": 31,
-  "eps": 0.05,
-  "delta": 0.1,
-  "accept_threshold": 0.35,
-  "hallucination_rate": 0.0,
-  "coverage": 0.580645,
-  "aurc": 0.152393,
-  "violation_rate": 0.0,
-  "violation_rate_ok": true,
-  "retrieval_recall_at_6": null,
-  "retrieval_mrr": null,
-  "simulated": false,
-  "full_regguard": {
-    "condition": "Full RegGuard (all components)",
-    "hallucination_rate": 0.0,
-    "coverage": 0.580645,
-    "aurc": 0.152393
-  },
-  "generated_on": "2026-10-03",
-  "git_commit": "161ce18e2e9fa6963144ae206e30b08c4bfd7216",
-  "config_hash": "cf34a6e3b1778af03a2b315009966f591d2c7dd31846776c9fc090969d679a22",
-  "config_path": "S:\\FYP\\M0_M10Complete_pipeline\\configs\\experiment.yaml"
+  "n_total": 65,
+  "n_accepted": 65,
+  "n_unsupported": 14,
+  "n_unclear_skipped": 7,
+  "coverage": 1.0,
+  "hallucination_rate": 0.2154,
+  "hallucination_ci_low": 0.1231,
+  "hallucination_ci_high": 0.3349,
+  "aurc": 0.1215,
+  "ltt_certified": false,
+  "note": "LTT threshold not applied. Conformal guarantee not certified. Pilot size insufficient."
 }

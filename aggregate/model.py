@@ -191,11 +191,14 @@ def score(
     -------
     List[ScoredAtom] in the same order as input, each with .risk in [0, 1].
     """
-    model = _load_model(model_path)
+    bundle = _load_model(model_path)
+    model = bundle
     feature_order = None
-    if isinstance(model, dict) and "model" in model:
-        feature_order = model.get("feature_order")
-        model = model["model"]
+    imputer = None
+    if isinstance(bundle, dict) and "model" in bundle:
+        feature_order = bundle.get("feature_order")
+        imputer = bundle.get("imputer")
+        model = bundle["model"]
     if model is None:
         if strict:
             raise StrictFailure(
@@ -228,6 +231,10 @@ def score(
         for r in REGULATORS:
             feats[f"reg_{r}"] = int(reg == r)
 
+        v2 = getattr(va, "v2_entail_prob", None)
+        if v2 is not None:
+            feats["V2_output"] = float(v2)
+
         all_feats.append(feats)
 
     from signals import validate_signals
@@ -239,6 +246,8 @@ def score(
             [_build_feature_vector(f, feature_order) for f in all_feats],
             dtype=float,
         )
+        if imputer is not None:
+            X = imputer.transform(X)
         raw_probs = model.predict_proba(X)[:, 1]
 
         # Apply calibration if available

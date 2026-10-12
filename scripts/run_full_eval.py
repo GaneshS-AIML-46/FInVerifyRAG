@@ -518,7 +518,6 @@ def main():
             except Exception as exc:
                 if attempt < max_retries:
                     logger.warning("Query %d failed (attempt %d/%d). Retrying... Error: %s", i, attempt+1, max_retries, exc)
-                    import time
                     time.sleep(2)
                     continue
                 

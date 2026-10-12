@@ -1,0 +1,94 @@
+{"question_id": "5d9bd14e-379f-45dd-96b1-c7530d5ba85a", "n_atoms": 3, "status": "ok", "latency": {"retrieve": 0.591, "generate": 109.9, "extract": 9.665, "verify": 7.544, "score": 0.168}}
+{"question_id": "2de14deb-e2b0-4c4c-8dee-d0a7ca322b75", "n_atoms": 0, "status": "no_atoms"}
+{"question_id": "e7debb5c-d2cc-43ad-bf90-cdc2df4de33b", "n_atoms": 0, "status": "no_atoms"}
+{"question_id": "f1116889-9d3b-40b6-9071-54e0251c7c0c", "n_atoms": 3, "status": "ok", "latency": {"retrieve": 2.433, "generate": 7.869, "extract": 8.686, "verify": 12.647, "score": 0.157}}
+{"question_id": "342ce8d3-a5d6-4074-a820-7b50e80367d4", "n_atoms": 2, "status": "ok", "latency": {"retrieve": 0.737, "generate": 7.509, "extract": 14.909, "verify": 25.182, "score": 4.428}}
+{"question_id": "15b6c86f-0e06-4e7c-a671-68cb0a3c0ab9", "n_atoms": 0, "status": "no_atoms"}
+{"question_id": "1af0c357-a760-4a41-a70e-46689ea24959", "n_atoms": 0, "status": "no_atoms"}
+{"question_id": "fce194f7-824f-46c2-ab4e-28d9c77fe880", "n_atoms": 0, "status": "no_atoms"}
+{"question_id": "f4cf2513-30fb-4fc3-93a7-0aa8d77e7f6b", "n_atoms": 0, "status": "no_atoms"}
+{"question_id": "79fb4cb9-3b31-4351-866c-caddb2933348", "n_atoms": 0, "status": "no_atoms"}
+{"question_id": "756154aa-9256-4bad-a952-2dcfa4597171", "n_atoms": 2, "status": "ok", "latency": {"retrieve": 0.497, "generate": 4.437, "extract": 5.476, "verify": 9.364, "score": 0.116}}
+{"question_id": "9eb1ad56-1fbf-4846-bcc7-aeaef5ce8e49", "n_atoms": 4, "status": "ok", "latency": {"retrieve": 0.697, "generate": 8.279, "extract": 0.001, "verify": 12.952, "score": 0.094}}
+{"question_id": "3a21effc-d01b-414a-bd1e-f1af4152879a", "n_atoms": 2, "status": "ok", "latency": {"retrieve": 0.88, "generate": 7.409, "extract": 8.076, "verify": 18.001, "score": 0.131}}
+{"question_id": "0835bd82-e531-4d52-a432-21f548cb7462", "n_atoms": 4, "status": "ok", "latency": {"retrieve": 1.064, "generate": 7.688, "extract": 14.551, "verify": 27.52, "score": 0.097}}
+{"question_id": "5d9bd14e-379f-45dd-96b1-c7530d5ba85a", "n_atoms": 3, "status": "ok", "latency": {"retrieve": 1.126, "generate": 9.482, "extract": 0.0, "verify": 7.085, "score": 0.119}}
+{"question_id": "8634e5f0-70be-4dd2-aa69-798d3f0ddbf0", "n_atoms": 0, "status": "no_atoms"}
+{"question_id": "f1116889-9d3b-40b6-9071-54e0251c7c0c", "n_atoms": 3, "status": "ok", "latency": {"retrieve": 0.492, "generate": 6.292, "extract": 0.008, "verify": 11.272, "score": 0.096}}
+{"question_id": "15b6c86f-0e06-4e7c-a671-68cb0a3c0ab9", "n_atoms": 0, "status": "no_atoms"}
+{"question_id": "fb5341f9-ff14-4bdd-90a6-e4cc42d5e993", "n_atoms": 2, "status": "ok", "latency": {"retrieve": 0.568, "generate": 4.753, "extract": 13.495, "verify": 10.64, "score": 0.06}}
+{"question_id": "1af0c357-a760-4a41-a70e-46689ea24959", "n_atoms": 0, "status": "no_atoms"}
+{"question_id": "fce194f7-824f-46c2-ab4e-28d9c77fe880", "n_atoms": 0, "status": "no_atoms"}
+{"question_id": "f4cf2513-30fb-4fc3-93a7-0aa8d77e7f6b", "n_atoms": 0, "status": "no_atoms"}
+{"question_id": "a6043846-d87e-439d-9a47-bd8ecf408776", "n_atoms": 1, "status": "ok", "latency": {"retrieve": 0.638, "generate": 7.33, "extract": 6.714, "verify": 4.057, "score": 0.077}}
+{"question_id": "756154aa-9256-4bad-a952-2dcfa4597171", "n_atoms": 2, "status": "ok", "latency": {"retrieve": 0.473, "generate": 3.331, "extract": 0.008, "verify": 8.752, "score": 0.049}}
+{"question_id": "0835bd82-e531-4d52-a432-21f548cb7462", "n_atoms": 4, "status": "ok", "latency": {"retrieve": 0.591, "generate": 3.96, "extract": 0.0, "verify": 21.912, "score": 0.185}}
+{"question_id": "1c0e6555-8889-46e3-b4d8-44b014f48790", "n_atoms": 2, "status": "ok", "latency": {"retrieve": 1.559, "generate": 8.228, "extract": 17.015, "verify": 10.984, "score": 0.05}}
+{"question_id": "8634e5f0-70be-4dd2-aa69-798d3f0ddbf0", "n_atoms": 0, "status": "no_atoms"}
+{"question_id": "fb5341f9-ff14-4bdd-90a6-e4cc42d5e993", "n_atoms": 2, "status": "ok", "latency": {"retrieve": 0.549, "generate": 2.693, "extract": 0.0, "verify": 10.575, "score": 0.058}}
+{"question_id": "a6043846-d87e-439d-9a47-bd8ecf408776", "n_atoms": 1, "status": "ok", "latency": {"retrieve": 0.646, "generate": 5.966, "extract": 0.0, "verify": 3.117, "score": 0.028}}
+{"question_id": "9cdade8e-f84b-483a-bf0f-a5889f40083b", "n_atoms": 1, "status": "ok", "latency": {"retrieve": 0.859, "generate": 7.397, "extract": 28.319, "verify": 5.938, "score": 0.08}}
+{"question_id": "1c0e6555-8889-46e3-b4d8-44b014f48790", "n_atoms": 2, "status": "ok", "latency": {"retrieve": 0.788, "generate": 3.35, "extract": 0.006, "verify": 10.304, "score": 0.041}}
+{"question_id": "e30bf6b3-f23a-4430-92b1-177e3963355a", "n_atoms": 0, "status": "no_atoms"}
+{"question_id": "9cdade8e-f84b-483a-bf0f-a5889f40083b", "n_atoms": 1, "status": "ok", "latency": {"retrieve": 0.858, "generate": 8.403, "extract": 0.013, "verify": 3.334, "score": 0.027}}
+{"question_id": "e30bf6b3-f23a-4430-92b1-177e3963355a", "n_atoms": 0, "status": "no_atoms"}
+{"question_id": "388918f5-7d8b-4c02-82db-da324520431d", "n_atoms": 2, "status": "ok", "latency": {"retrieve": 0.691, "generate": 9.274, "extract": 2.221, "verify": 12.357, "score": 0.173}}
+{"question_id": "388918f5-7d8b-4c02-82db-da324520431d", "n_atoms": 2, "status": "ok", "latency": {"retrieve": 0.638, "generate": 8.52, "extract": 0.01, "verify": 12.008, "score": 0.073}}
+{"question_id": "1cf965f1-a18f-45c4-b464-fa6ac8abde59", "n_atoms": 4, "status": "ok", "latency": {"retrieve": 1.38, "generate": 8.916, "extract": 9.561, "verify": 9.817, "score": 0.291}}
+{"question_id": "1cf965f1-a18f-45c4-b464-fa6ac8abde59", "n_atoms": 4, "status": "ok", "latency": {"retrieve": 0.722, "generate": 6.033, "extract": 12.931, "verify": 9.471, "score": 0.142}}
+{"question_id": "d54f1117-cf0f-4bba-9aed-bab92d8e14fd", "n_atoms": 1, "status": "ok", "latency": {"retrieve": 1.01, "generate": 7.378, "extract": 4.971, "verify": 5.197, "score": 0.026}}
+{"question_id": "d54f1117-cf0f-4bba-9aed-bab92d8e14fd", "n_atoms": 1, "status": "ok", "latency": {"retrieve": 0.603, "generate": 4.182, "extract": 7.151, "verify": 5.032, "score": 0.025}}
+{"question_id": "e2fbf445-8edf-455d-8430-bcdf08213d24", "n_atoms": 3, "status": "ok", "latency": {"retrieve": 0.619, "generate": 8.915, "extract": 11.06, "verify": 20.338, "score": 0.214}}
+{"question_id": "e2fbf445-8edf-455d-8430-bcdf08213d24", "n_atoms": 3, "status": "ok", "latency": {"retrieve": 0.556, "generate": 6.095, "extract": 13.45, "verify": 20.138, "score": 0.08}}
+{"question_id": "33e4f38e-5f88-45e4-b64b-6a4312c2e9b0", "n_atoms": 2, "status": "ok", "latency": {"retrieve": 1.2, "generate": 6.622, "extract": 4.544, "verify": 9.359, "score": 0.21}}
+{"question_id": "33e4f38e-5f88-45e4-b64b-6a4312c2e9b0", "n_atoms": 2, "status": "ok", "latency": {"retrieve": 0.614, "generate": 4.471, "extract": 6.466, "verify": 9.023, "score": 0.052}}
+{"question_id": "7265a236-22a0-4f17-b612-49556beae558", "n_atoms": 2, "status": "ok", "latency": {"retrieve": 1.021, "generate": 6.084, "extract": 5.987, "verify": 10.251, "score": 0.109}}
+{"question_id": "7265a236-22a0-4f17-b612-49556beae558", "n_atoms": 2, "status": "ok", "latency": {"retrieve": 0.575, "generate": 3.997, "extract": 6.58, "verify": 10.702, "score": 0.038}}
+{"question_id": "aa5ecb5b-ad3e-4972-a95c-3a8d324d5abe", "n_atoms": 2, "status": "ok", "latency": {"retrieve": 1.156, "generate": 6.168, "extract": 5.678, "verify": 13.784, "score": 0.089}}
+{"question_id": "aa5ecb5b-ad3e-4972-a95c-3a8d324d5abe", "n_atoms": 2, "status": "ok", "latency": {"retrieve": 0.57, "generate": 4.868, "extract": 5.727, "verify": 13.796, "score": 0.047}}
+{"question_id": "68da30ee-f4dc-4ff7-9928-03e105785f30", "n_atoms": 0, "status": "no_atoms"}
+{"question_id": "68da30ee-f4dc-4ff7-9928-03e105785f30", "n_atoms": 0, "status": "no_atoms"}
+{"question_id": "2e42f72a-499b-49eb-bd50-9598d7099fd1", "n_atoms": 0, "status": "no_atoms"}
+{"question_id": "2e42f72a-499b-49eb-bd50-9598d7099fd1", "n_atoms": 0, "status": "no_atoms"}
+{"question_id": "99a66e49-49d9-4c55-8671-3581f62a5deb", "n_atoms": 1, "status": "ok", "latency": {"retrieve": 0.488, "generate": 4.605, "extract": 5.608, "verify": 7.221, "score": 0.091}}
+{"question_id": "99a66e49-49d9-4c55-8671-3581f62a5deb", "n_atoms": 1, "status": "ok", "latency": {"retrieve": 0.521, "generate": 4.553, "extract": 5.656, "verify": 7.274, "score": 0.04}}
+{"question_id": "cef82757-2246-41af-ac71-a3a15ad9b992", "n_atoms": 4, "status": "ok", "latency": {"retrieve": 0.659, "generate": 11.105, "extract": 11.955, "verify": 23.655, "score": 0.254}}
+{"question_id": "cef82757-2246-41af-ac71-a3a15ad9b992", "n_atoms": 4, "status": "ok", "latency": {"retrieve": 0.691, "generate": 11.12, "extract": 11.936, "verify": 23.741, "score": 0.226}}
+{"question_id": "e0776279-0218-48ce-af39-8b67e2fe58a6", "n_atoms": 3, "status": "ok", "latency": {"retrieve": 0.683, "generate": 6.824, "extract": 9.063, "verify": 11.505, "score": 0.149}}
+{"question_id": "e0776279-0218-48ce-af39-8b67e2fe58a6", "n_atoms": 3, "status": "ok", "latency": {"retrieve": 0.688, "generate": 6.86, "extract": 9.077, "verify": 11.587, "score": 0.103}}
+{"question_id": "38684da9-a53d-40b3-9662-35d47351dc39", "n_atoms": 0, "status": "no_atoms"}
+{"question_id": "38684da9-a53d-40b3-9662-35d47351dc39", "n_atoms": 0, "status": "no_atoms"}
+{"question_id": "294fdff0-cb7f-45b3-aa0f-676e1b0565a5", "n_atoms": 2, "status": "ok", "latency": {"retrieve": 0.635, "generate": 5.666, "extract": 9.962, "verify": 14.069, "score": 0.098}}
+{"question_id": "294fdff0-cb7f-45b3-aa0f-676e1b0565a5", "n_atoms": 2, "status": "ok", "latency": {"retrieve": 0.671, "generate": 5.612, "extract": 9.986, "verify": 14.224, "score": 0.048}}
+{"question_id": "2b7df9ac-e009-4034-9382-95ba0f8d2db0", "n_atoms": 2, "status": "ok", "latency": {"retrieve": 0.628, "generate": 6.569, "extract": 8.46, "verify": 18.09, "score": 0.108}}
+{"question_id": "2b7df9ac-e009-4034-9382-95ba0f8d2db0", "n_atoms": 2, "status": "ok", "latency": {"retrieve": 0.561, "generate": 6.51, "extract": 8.519, "verify": 18.134, "score": 0.053}}
+{"question_id": "7eece8a0-a9aa-417a-95c5-a8927ed8c5fe", "n_atoms": 0, "status": "no_atoms"}
+{"question_id": "7eece8a0-a9aa-417a-95c5-a8927ed8c5fe", "n_atoms": 0, "status": "no_atoms"}
+{"question_id": "5688d338-1110-40e4-b392-d5bf6ba9147a", "n_atoms": 0, "status": "no_atoms"}
+{"question_id": "5688d338-1110-40e4-b392-d5bf6ba9147a", "n_atoms": 0, "status": "no_atoms"}
+{"question_id": "f13d41a4-b63c-4485-87f6-608f96c2cbd7", "n_atoms": 0, "status": "no_atoms"}
+{"question_id": "f13d41a4-b63c-4485-87f6-608f96c2cbd7", "n_atoms": 0, "status": "no_atoms"}
+{"question_id": "b76a1459-ff2d-445b-9af6-b917c0084b94", "n_atoms": 4, "status": "ok", "latency": {"retrieve": 0.86, "generate": 4.68, "extract": 10.33, "verify": 28.526, "score": 0.156}}
+{"question_id": "b76a1459-ff2d-445b-9af6-b917c0084b94", "n_atoms": 4, "status": "ok", "latency": {"retrieve": 0.888, "generate": 4.582, "extract": 10.385, "verify": 28.495, "score": 0.139}}
+{"question_id": "c519b7af-8960-408d-a091-982c1d4b8331", "n_atoms": 0, "status": "no_atoms"}
+{"question_id": "c519b7af-8960-408d-a091-982c1d4b8331", "n_atoms": 0, "status": "no_atoms"}
+{"question_id": "fa7ad18d-c114-443d-bd03-6e853b79287e", "n_atoms": 1, "status": "ok", "latency": {"retrieve": 0.648, "generate": 7.54, "extract": 6.005, "verify": 6.147, "score": 0.079}}
+{"question_id": "fa7ad18d-c114-443d-bd03-6e853b79287e", "n_atoms": 1, "status": "ok", "latency": {"retrieve": 0.654, "generate": 7.545, "extract": 6.016, "verify": 6.186, "score": 0.045}}
+{"question_id": "b1d07326-a3c4-44e9-b49d-b252ddb71250", "n_atoms": 0, "status": "no_atoms"}
+{"question_id": "b1d07326-a3c4-44e9-b49d-b252ddb71250", "n_atoms": 0, "status": "no_atoms"}
+{"question_id": "2527d7d7-f2c3-49e1-926b-d763fff0c10f", "n_atoms": 2, "status": "ok", "latency": {"retrieve": 0.627, "generate": 6.757, "extract": 7.745, "verify": 18.086, "score": 0.132}}
+{"question_id": "2527d7d7-f2c3-49e1-926b-d763fff0c10f", "n_atoms": 2, "status": "ok", "latency": {"retrieve": 0.653, "generate": 6.729, "extract": 7.771, "verify": 18.157, "score": 0.081}}
+{"question_id": "6c9de226-83b5-4ee9-9ce3-12a3f27d8e7b", "n_atoms": 1, "status": "ok", "latency": {"retrieve": 0.547, "generate": 7.191, "extract": 5.989, "verify": 2.283, "score": 0.075}}
+{"question_id": "6c9de226-83b5-4ee9-9ce3-12a3f27d8e7b", "n_atoms": 1, "status": "ok", "latency": {"retrieve": 0.542, "generate": 7.151, "extract": 6.035, "verify": 2.352, "score": 0.044}}
+{"question_id": "59331e5a-7f1f-4289-83d6-c21d8e4ec1f3", "n_atoms": 2, "status": "ok", "latency": {"retrieve": 0.681, "generate": 8.87, "extract": 10.241, "verify": 13.263, "score": 0.115}}
+{"question_id": "59331e5a-7f1f-4289-83d6-c21d8e4ec1f3", "n_atoms": 2, "status": "ok", "latency": {"retrieve": 0.653, "generate": 8.816, "extract": 10.26, "verify": 13.252, "score": 0.102}}
+{"question_id": "79284039-7e7d-4033-912f-a7ab8c656f90", "n_atoms": 2, "status": "ok", "latency": {"retrieve": 0.61, "generate": 8.049, "extract": 5.914, "verify": 18.103, "score": 0.121}}
+{"question_id": "79284039-7e7d-4033-912f-a7ab8c656f90", "n_atoms": 2, "status": "ok", "latency": {"retrieve": 0.614, "generate": 8.049, "extract": 5.931, "verify": 18.12, "score": 0.1}}
+{"question_id": "dc070f87-a378-4a23-8502-d4878adc6626", "n_atoms": 1, "status": "ok", "latency": {"retrieve": 0.665, "generate": 7.461, "extract": 5.392, "verify": 5.787, "score": 0.065}}
+{"question_id": "dc070f87-a378-4a23-8502-d4878adc6626", "n_atoms": 1, "status": "ok", "latency": {"retrieve": 0.654, "generate": 7.442, "extract": 5.365, "verify": 5.86, "score": 0.043}}
+{"question_id": "95abcbeb-fc57-4305-b42a-2086093215a6", "n_atoms": 0, "status": "no_atoms"}
+{"question_id": "95abcbeb-fc57-4305-b42a-2086093215a6", "n_atoms": 0, "status": "no_atoms"}
+{"question_id": "f964a4c7-9e97-4b3c-9cdb-0ed15792917b", "n_atoms": 1, "status": "ok", "latency": {"retrieve": 0.52, "generate": 4.952, "extract": 6.285, "verify": 9.095, "score": 0.036}}
+{"question_id": "f964a4c7-9e97-4b3c-9cdb-0ed15792917b", "n_atoms": 1, "status": "ok", "latency": {"retrieve": 0.537, "generate": 4.934, "extract": 6.307, "verify": 9.083, "score": 0.026}}
+{"question_id": "05364d6f-68a8-4811-9e17-4b1e8b2a185b", "n_atoms": 1, "status": "ok", "latency": {"retrieve": 0.704, "generate": 7.416, "extract": 5.975, "verify": 6.12, "score": 0.043}}
+{"question_id": "05364d6f-68a8-4811-9e17-4b1e8b2a185b", "n_atoms": 1, "status": "ok", "latency": {"retrieve": 0.708, "generate": 7.412, "extract": 6.018, "verify": 6.11, "score": 0.038}}

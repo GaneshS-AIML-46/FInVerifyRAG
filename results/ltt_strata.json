@@ -1,0 +1,58 @@
+[
+  {
+    "stratum_id": "RATE",
+    "n_calib": 0,
+    "n_accepted": 0,
+    "threshold": null,
+    "selective_risk": null,
+    "status": "merged"
+  },
+  {
+    "stratum_id": "THRESHOLD",
+    "n_calib": 0,
+    "n_accepted": 0,
+    "threshold": null,
+    "selective_risk": null,
+    "status": "merged"
+  },
+  {
+    "stratum_id": "DATE",
+    "n_calib": 0,
+    "n_accepted": 0,
+    "threshold": null,
+    "selective_risk": null,
+    "status": "merged"
+  },
+  {
+    "stratum_id": "SECTION",
+    "n_calib": 0,
+    "n_accepted": 0,
+    "threshold": null,
+    "selective_risk": null,
+    "status": "merged"
+  },
+  {
+    "stratum_id": "ENTITY",
+    "n_calib": 0,
+    "n_accepted": 0,
+    "threshold": null,
+    "selective_risk": null,
+    "status": "merged"
+  },
+  {
+    "stratum_id": "APPLICABILITY",
+    "n_calib": 0,
+    "n_accepted": 0,
+    "threshold": null,
+    "selective_risk": null,
+    "status": "merged"
+  },
+  {
+    "stratum_id": "*|*",
+    "n_calib": 27,
+    "n_accepted": 0,
+    "threshold": null,
+    "selective_risk": null,
+    "status": "not_certifiable"
+  }
+]

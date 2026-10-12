@@ -219,13 +219,20 @@ class LLMClient:
         raise LLMError(f"[{self.role}] Max retries ({max_attempts}) exceeded. Last error: {last_exc}")
 
     def _call_anthropic(self, user: str, system: str) -> Dict[str, Any]:
-        response = self._anthropic_client.messages.create(
+        # temperature is not accepted by extended-thinking models (claude-sonnet-4-6, claude-3-7, etc.)
+        # For those models temperature is internally fixed at 1.0; omit it to stay compatible.
+        create_kwargs: Dict[str, Any] = dict(
             model=self.model,
             max_tokens=self.max_tokens,
-            temperature=self.temperature,
             system=system or "You are a helpful assistant.",
             messages=[{"role": "user", "content": user}],
         )
+        # Only pass temperature for models that support it (non-extended-thinking)
+        if self.temperature is not None and not any(
+            tok in self.model for tok in ("sonnet-4-6", "sonnet-4-7", "opus-4", "3-7-sonnet")
+        ):
+            create_kwargs["temperature"] = self.temperature
+        response = self._anthropic_client.messages.create(**create_kwargs)
         return {
             "text": response.content[0].text,
             "model": response.model,
