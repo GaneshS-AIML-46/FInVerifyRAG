@@ -199,7 +199,7 @@ export default function CalibrationDrift() {
                   <CartesianGrid strokeDasharray="3 3" stroke="var(--ink-700)" />
                   <XAxis dataKey="t" tick={{ fill: 'var(--paper-300)', fontSize: 11 }} label={{ value: 'Time →', position: 'insideRight', fill: 'var(--ink-500)', fontSize: 11 }} />
                   <YAxis tickFormatter={v => `${(v*100).toFixed(1)}%`} tick={{ fill: 'var(--paper-300)', fontSize: 11 }} domain={[0, 0.15]} />
-                  <Tooltip contentStyle={{ background: 'var(--ink-800)', border: 'var(--border)', borderRadius: 8, fontSize: 12 }} formatter={(v: number) => [`${(v*100).toFixed(1)}%`, 'Risk']} />
+                  <Tooltip contentStyle={{ background: 'var(--ink-800)', border: 'var(--border)', borderRadius: 8, fontSize: 12 }} formatter={(v: any) => [`${(Number(v ?? 0)*100).toFixed(1)}%`, 'Risk']} />
                   <ReferenceLine y={cal.epsilon} stroke="var(--stop)" strokeDasharray="5 3" label={{ value: 'ε', position: 'right', fill: 'var(--stop)', fontSize: 12 }} />
                   <Line
                     dataKey="risk" stroke={driftStage === 'during' ? 'var(--stop)' : driftStage === 'after' ? 'var(--ok)' : 'var(--brass-500)'}

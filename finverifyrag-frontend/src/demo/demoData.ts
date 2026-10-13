@@ -1,7 +1,7 @@
 // FinVerifyRAG — Demo mode: recorded JSON traces (Section 7)
 // All data is clearly labelled as sample data per the honesty rule (Section 5.3)
 
-import type { QueryResult, BenchmarkData, CalibrationData, TestQuery } from './types';
+import type { QueryResult, BenchmarkData, CalibrationData, TestQuery } from '../lib/types';
 
 export const DEMO_RESULT: QueryResult = {
   query: 'What is the Cash Reserve Ratio (CRR) requirement and how is it maintained by banks?',

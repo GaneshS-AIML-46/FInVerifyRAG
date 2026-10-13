@@ -313,7 +313,8 @@ export function normalizeQueryResponse(
 }
 
 function summaryValue(summary: BackendBenchmarkSummary | undefined, key: keyof BackendBenchmarkSummary, fallback = 0): number {
-  return finiteOr(summary?.[key], fallback);
+  const val = summary?.[key];
+  return typeof val === 'number' ? finiteOr(val, fallback) : fallback;
 }
 
 function summaryRisk(summary: BackendBenchmarkSummary | undefined): number {
@@ -403,7 +404,7 @@ export function normalizeBenchmark(raw: BackendBenchmarkResponse): BenchmarkData
     latency_median_ms: summaryValue(learned, 'mean_latency_ms'),
     risk_coverage_curve: riskCoverageCurve(records),
     baseline_comparison: baselineComparison,
-    per_atom_type: groupedPerformance(records, 'query_type') as BenchmarkData['per_atom_type'],
+    per_atom_type: groupedPerformance(records, 'query_type') as unknown as BenchmarkData['per_atom_type'],
     per_regulator: groupedPerformance(records, 'regulator'),
   };
 }

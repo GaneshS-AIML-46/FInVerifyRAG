@@ -224,8 +224,6 @@ function StageCard({ stage, result, expanded, onToggle }: {
 export default function Pipeline() {
   const [expanded, setExpanded] = useState<number | null>(null);
   const result = DEMO_RESULT;
-  const latencies = [result.latency_ms.retrieval, 0, result.latency_ms.generation, 0, result.latency_ms.verification, 0, 0, 0, 0, 0];
-  const maxLat = Math.max(...latencies);
 
   return (
     <div style={{ maxWidth: 1200, margin: '0 auto', padding: '24px 24px 48px' }}>

@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ReferenceLine,
-  ResponsiveContainer, BarChart, Bar, Legend, Cell,
+  ResponsiveContainer, BarChart, Bar, Legend,
 } from 'recharts';
 import { DEMO_BENCHMARK } from '../demo/demoData';
 
@@ -41,6 +41,8 @@ const ATOM_COLORS: Record<string, string> = {
   SECTION: 'var(--atom-section)', DATE: 'var(--atom-date)',
   ENTITY: 'var(--atom-entity)', APPLICABILITY: 'var(--atom-applicability)',
 };
+
+const BENCHMARK_DATE_LABEL = new Date().toLocaleDateString();
 
 export default function Benchmark() {
   const b = DEMO_BENCHMARK;
@@ -150,7 +152,7 @@ export default function Benchmark() {
             </div>
           ))}
         </div>
-        <p style={{ fontSize: 11, color: 'var(--ink-500)', marginTop: 16 }}>Dataset · Qwen2.5-7B-Instruct · {new Date().toLocaleDateString()}</p>
+        <p style={{ fontSize: 11, color: 'var(--ink-500)', marginTop: 16 }}>Dataset · Qwen2.5-7B-Instruct · {BENCHMARK_DATE_LABEL}</p>
       </div>
     </div>
   );

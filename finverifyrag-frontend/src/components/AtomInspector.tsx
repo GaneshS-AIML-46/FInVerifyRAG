@@ -142,7 +142,7 @@ function SignalsTab({ atom }: { atom: Atom }) {
             <Radar dataKey="value" stroke="var(--brass-500)" fill="var(--brass-500)" fillOpacity={0.15} />
             <Tooltip
               contentStyle={{ background: 'var(--ink-800)', border: 'var(--border)', borderRadius: 8, fontSize: 12 }}
-              formatter={(v: number) => [`${v.toFixed(1)}%`, 'Score']}
+              formatter={(v: any) => [`${Number(v ?? 0).toFixed(1)}%`, 'Score']}
             />
           </RadarChart>
         </ResponsiveContainer>

@@ -1,0 +1,10 @@
+{
+  "buildCommand": "cd finverifyrag-frontend && npm install && npm run build",
+  "outputDirectory": "finverifyrag-frontend/dist",
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}
